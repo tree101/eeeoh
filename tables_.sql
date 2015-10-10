@@ -1,8 +1,43 @@
+--- three main tables
+--- subject
+--- sample
+--- version
+
+--- subtables
+--- (1) "action" use to indicate what was done such as: create, modify, revert, withdraw, split, add, dispose 
+--- (2) "protocol"
+
+
+------- comments
+--- version is a three column uuid, action, date, table, with a JSON type to keep records 
+--- I don't think we should allow undo/revert function because it will make the version control 
+--- problematic, perhaps just allow program to populate and revert as one the actions
+
+
+DROP TABLE  IF EXISTS  subject;
+CREATE EXTENSION "uuid-ossp";
+CREATE TABLE subject(
+id uuid NOT NULL DEFAULT uuid_generate_v4(), 
+age INT,
+sex INT,
+protocol INT  ## FK
+date_collection DATE NOT NULL
+version INT DEFAULT
+action INT ## 
+);
+
+
+INSERT INTO subject ("id","age")
+	VALUES (
+	uuid_generate_v4(), '111'
+	
+	);
+
 
 DROP TABLE  IF EXISTS  tissue;
 -- table below stores data for tissue biopsy collection
 
-CREATE TABLE tissue(
+CREATE TABLE sample_type_data(
     id INT NOT NULL, -- unique to each subject: see below for contraints 
     id_sample INT NOT NULL, -- unique to each biopsy 
     tissue_type VARCHAR(50) NOT NULL, -- predefined dictionary table
