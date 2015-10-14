@@ -1,0 +1,52 @@
+/* Styles go here */
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+body{
+  margin: 0 auto;
+}
+
+.content {
+  width: 80%;
+  height: 100%;
+  float: left;
+  background-color: #F0F0F0;
+}
+
+.sidebar{
+  width: 20%;
+  height: 100%;
+  float: left;
+  background-color: #1F5C99;
+  
+}
+
+.sidebar ul{
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    list-style: none;
+  
+}
+
+.sidebar li{
+    
+    padding-top: 5%;
+    padding-left: 15%;
+}
+
+.sidebar a:link{
+   color: #FFFFFF;
+    font-size: 1.5em;
+    font-weight: bold;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.sidebar a:hover{
+  color: #FFFF99;
+  font-size: 1.9em;
+}

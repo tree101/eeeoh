@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
+    <script src="script.js"></script>
+	
+	{% if title %}
+    <title>{{ title }} - eeeoh dude</title>
+    {% else %}
+    <title>Welcome to EEEOH</title>
+    {% endif %}
+	
+  </head>
+
+  <body >
+    <h1>Eeeoh database</h1>
+    
+    <div class="sidebar">
+      <ul>
+        <li>
+            <a href="#">Subject</a> </li>
+        <li>    
+            <a href="#">Tissue</a></li>
+            <li><a href="#">History</a></li>
+            <li><a href="#">Storage</a></li>
+            <li><a href="#">Consents</a></li>
+      </ul>
+    </div>
+    <div class="content">
+	  <p><hr></p>	  
+      <p>  {% block content %}{% endblock %}   </p>
+    </div>
+  </body>
+
+</html>
