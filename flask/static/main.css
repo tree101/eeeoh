@@ -19,6 +19,10 @@ a:visited {
   padding-left: 200px;
   #float: left;
   background-color: #F0F0F0;
+  	border:dashed 1px #FF9933;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+border-radius: 5px;
 }
 
 
@@ -29,6 +33,7 @@ a:visited {
     font-weight: bold;
     font-weight: 900;
     text-decoration: none;
+
 }
 
 .content a:hover{
@@ -46,8 +51,8 @@ a:visited {
   width: 20%;
   height: 100%;
   float: left;
-  background-color: #1F5C99;
   
+  background:-webkit-gradient(linear, 100% 50%, 35% 33%, from(#331F0A), to(#1F5C99)) 
 }
 
 .sidebar ul{
@@ -77,3 +82,4 @@ a:visited {
   color: #FFFF99;
   font-size: 1.9em;
 }
+
