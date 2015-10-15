@@ -6,8 +6,12 @@ from flask import redirect
 from flask import url_for
 from flask import escape
 from flask.ext.sqlalchemy import SQLAlchemy
+import psycopg2
 
 app = Flask(__name__)
+
+
+conn = psycopg2.connect("dbname='alexsql' user='alexsql' host='localhost' password='eeeoooh'")
 
 @app.route('/')
 def index():
@@ -31,6 +35,15 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('index'))
 
+@app.route('/db')
+def db_get():
+    # remove the username from the session if it's there
+		cur = conn.cursor()
+		
+		cur.execute("""SELECT * from action""")
+		rows = cur.fetchall()
+		return 'hey dude <hr> %s' % rows	
+	
 # set the secret key.  keep this really secret:
 app.secret_key = 'EEZr98j/*yX R~XHH!jmN]0)X/,?RT'
 	

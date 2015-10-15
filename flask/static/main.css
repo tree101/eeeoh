@@ -8,12 +8,39 @@ body{
   margin: 0 auto;
 }
 
+a:visited {
+    color: #339933;
+	 text-decoration: none;
+}
+
 .content {
-  width: 80%;
+  width: 100%;
   height: 100%;
-  float: left;
+  padding-left: 200px;
+  #float: left;
   background-color: #F0F0F0;
 }
+
+
+
+.content a:link{
+   color: #003399;
+    font-size: 1.5em;
+    font-weight: bold;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.content a:hover{
+  color: #FFFF99;
+  font-size: 1.9em;
+}
+
+
+
+
+
+
 
 .sidebar{
   width: 20%;
