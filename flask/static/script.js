@@ -1,20 +1,4 @@
-<!DOCTYPE html>
-<html>
-
-  <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
-	
-	 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    
-	
-	{% if title %}
-    <title>{{ title }} - eeeoh dude</title>
-    {% else %}
-    <title>Welcome to EEEOH</title>
-    {% endif %}
-	
-	
-	 <script type=text/javascript>
+ <script type=text/javascript>
     $(function() {
       
      
@@ -51,24 +35,3 @@ function checkFilled(e) {
 }
 
   </script>
-	
-  </head>
-
-  <body >
- 
-     <div class="tophead"><a href="#">HOME</a> | TABLES | INSERT | CONTACT</div>
-    
-    
-    <div class="content">
-      {% block content %}{% endblock %} 
-    </div>
- 
- 
- 
- 
- 
-  </body>
-
-</html>
-
- 

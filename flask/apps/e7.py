@@ -7,7 +7,7 @@ from flask import redirect
 from flask import url_for
 from flask import escape
 import pickle
-
+from flask import jsonify
 from urlparse import urlparse, urljoin
 from flask.ext.wtf import Form
 
@@ -43,7 +43,12 @@ def index():
         #return 'Logged in as %s' % escape(session['username'])
     return redirect(url_for('login'))
 
-
+@app.route('/go')
+def go():
+    # check if user is login.  
+    if 'username' in session:
+		return jsonify(result='hi dude')
+    return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
