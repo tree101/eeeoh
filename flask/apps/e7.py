@@ -6,18 +6,29 @@ from flask import session
 from flask import redirect
 from flask import url_for
 from flask import escape
-from flask.ext.sqlalchemy import SQLAlchemy
+
 
 from urlparse import urlparse, urljoin
 from flask.ext.wtf import Form
-from flask.ext.bcrypt import Bcrypt
 
+# password hash
+from flask.ext.bcrypt import Bcrypt
+# database access
 import psycopg2
+# login manager
+from flask.ext.login import LoginManager
+
+import re
 
 app = Flask(__name__)
 app.config.from_object('config')
-bcrypt = Bcrypt(app)
 
+# initiate hash 
+bcrypt = Bcrypt(app)
+#initiate login
+lm = LoginManager()
+lm.init_app(app)
+# connect to postgres
 conn = psycopg2.connect("dbname='eeeoh' user='alexsql' host='localhost' password='eeeoooh'")
 
 
@@ -34,18 +45,17 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    ##  either renders the page for login info or if there is incoming it will check with the database and associate it 
-    ## with a project. 
-    pw_hash = bcrypt.generate_password_hash('fdfdseee')
-    passornot = bcrypt.check_password_hash(pw_hash, 'boofdsfdk102') 
+    # check if its there is incoming password, then match password 
     if request.method == 'POST':
-	# check username here.   
-	#pw = request.form['password']
-	#hashed = hashpw(pw, gensalt())
-	#check = hashpw(pw, hashed)
-        #session['username'] = hashed
-        return redirect(url_for('index'))
-    return render_template('login.html', hashed=passornot)
+	pw = request.form['password']
+	email = request.form['email']
+	passornot = checkpassword(email,pw)
+	if (passornot==0):
+		return render_template('login.html')
+	else:
+		session['username'] = passornot
+		return redirect(url_for('index'))
+    return render_template('login.html')
 
 @app.route('/logout')
 def logout():
@@ -74,8 +84,31 @@ def db_get():
 		#dbc = '<table></table>';
 		return render_template('table.html',title='',table_stuff=out)
 	
-# set the secret key.  keep this really secret:
-app.secret_key = 'EEZr98j/*yX R~XHH!jmN]0)X/,?RT'
+
+
+### make up stuff
+def checkpassword(email,pw):
+	# get user from database 
+	# check if user even exists
+	cur = conn.cursor()
+	passornot = 0 
+	mydb = 'Select * from userlogin where email=\''+email+'\' ';
+	cur.execute(mydb)
+	rows = cur.fetchall()
+	if not rows:
+		passornot = "user does not exists"
+	else:
+		name= rows[0][1] + " " + rows[0][2]
+		group=rows[0][4]
+		user=rows[0][3]
+		# check 
+		passornot = bcrypt.check_password_hash(rows[0][5], pw) 
+		if(passornot==1):
+			return name
+		else:
+			return 0
+	
+	
 	
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

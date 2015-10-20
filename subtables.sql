@@ -41,6 +41,7 @@ firstname VARCHAR NOT NULL,
 lasname VARCHAR NOT NULL, 
 email VARCHAR NOT NULL,
 groupName VARCHAR, 
+password VARCHAR, 
 notes TEXT 
 
 )
