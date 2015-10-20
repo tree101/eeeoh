@@ -10,30 +10,42 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 from urlparse import urlparse, urljoin
 from flask.ext.wtf import Form
-
+from flask.ext.bcrypt import Bcrypt
 
 import psycopg2
 
 app = Flask(__name__)
 app.config.from_object('config')
+bcrypt = Bcrypt(app)
 
-conn = psycopg2.connect("dbname='alexsql' user='alexsql' host='localhost' password='eeeoooh'")
+conn = psycopg2.connect("dbname='eeeoh' user='alexsql' host='localhost' password='eeeoooh'")
+
+
 
 @app.route('/')
 def index():
+    # check if user is login.  
     if 'username' in session:
 		return render_template('index.html', name=escape(session['username']))
         #return 'Logged in as %s' % escape(session['username'])
-    return render_template('index.html')
+    return redirect(url_for('login'))
 
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    ##  either renders the page for login info or if there is incoming it will check with the database and associate it 
+    ## with a project. 
+    pw_hash = bcrypt.generate_password_hash('fdfdseee')
+    passornot = bcrypt.check_password_hash(pw_hash, 'boofdsfdk102') 
     if request.method == 'POST':
-        session['username'] = request.form['username']
+	# check username here.   
+	#pw = request.form['password']
+	#hashed = hashpw(pw, gensalt())
+	#check = hashpw(pw, hashed)
+        #session['username'] = hashed
         return redirect(url_for('index'))
-    return render_template('login.html')
+    return render_template('login.html', hashed=passornot)
 
 @app.route('/logout')
 def logout():
@@ -45,11 +57,11 @@ def logout():
 def db_get():
     # remove the username from the session if it's there
 		cur = conn.cursor()
-		mydb = request.args.get("db")
+		#mydb = request.args.get("db")
 		#SELECT * from action
 		#SELECT * from action
 		
-		mydb = 'SELECT * from '+ 'action'; 
+		mydb = 'SELECT * from '+ 'userlogin'; 
 		cur.execute(mydb)
 		rows = cur.fetchall()
 		out = '';

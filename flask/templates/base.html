@@ -3,7 +3,8 @@
 
   <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
-	<link rel="stylesheet" href="{{ url_for('static', filename='table.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}" />
+	
     <script src="script.js"></script>
 	
 	{% if title %}
@@ -15,23 +16,20 @@
   </head>
 
   <body >
-    <h1>Eeeoh database</h1>
+ 
+     <div class="tophead"><a href="#">HOME</a> | TABLES | INSERT | CONTACT</div>
     
-    <div class="sidebar">
-      <ul>
-        <li>
-            <a href="#">Subject</a> </li>
-        <li>    
-            <a href="#">Tissue</a></li>
-            <li><a href="./db?db=action">action</a></li>
-            <li><a href="./db?db=storage">Storage</a></li>
-            <li><a href="./db?db=consent">Consents</a></li>
-      </ul>
-    </div>
+    
     <div class="content">
-	  <p><hr></p>	  
-      {% block content %}{% endblock %}   
+      {% block content %}{% endblock %} 
     </div>
+ 
+ 
+ 
+ 
+ 
   </body>
 
 </html>
+
+ 

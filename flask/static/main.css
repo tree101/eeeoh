@@ -1,4 +1,6 @@
 /* Styles go here */
+
+/* Styles go here */
 html, body {
   width: 100%;
   height: 100%;
@@ -8,78 +10,87 @@ body{
   margin: 0 auto;
 }
 
-a:visited {
-    color: #339933;
-	 text-decoration: none;
-}
-
 .content {
   width: 100%;
-  height: 100%;
-  padding-left: 200px;
-  #float: left;
-  background-color: #F0F0F0;
-  	border:dashed 1px #FF9933;
--moz-border-radius: 5px;
--webkit-border-radius: 5px;
-border-radius: 5px;
-}
-
-
-
-.content a:link{
-   color: #003399;
-    font-size: 1.5em;
-    font-weight: bold;
-    font-weight: 900;
-    text-decoration: none;
-
-}
-
-.content a:hover{
-  color: #FFFF99;
-  font-size: 1.9em;
-}
-
-
-
-
-
-
-
-.sidebar{
-  width: 20%;
-  height: 100%;
+  border-top-style: double; 
+  border-color: #AEAEAE;
   float: left;
-  
-  background:-webkit-gradient(linear, 100% 50%, 35% 33%, from(#331F0A), to(#1F5C99)) 
-}
-
-.sidebar ul{
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    list-style: none;
-  
-}
-
-.sidebar li{
     
-    padding-top: 5%;
-    padding-left: 15%;
+    padding-top: 10px;
+    padding-right: 50px;
+    padding-bottom: 0px;
+    padding-left: 50px;
+
+  
 }
 
-.sidebar a:link{
-   color: #FFFFFF;
-    font-size: 1.5em;
-    font-weight: bold;
-    font-weight: 900;
-    text-decoration: none;
+a:link{
+      text-decoration: none;
+      color: #616161;
 }
 
-.sidebar a:hover{
-  color: #FFFF99;
-  font-size: 1.9em;
+a:visited {
+    color: #616161;
 }
+
+a:hover {
+    color: #99FF66;
+}
+
+.tophead{
+font-weight:bold;
+color:#616161;
+letter-spacing:2pt;
+word-spacing:2pt;
+font-size:30px;
+text-align:RIGHT;
+
+font-family:arial, helvetica, sans-serif;
+line-height:1;
+margin:0px;
+padding:17px;
+padding-right: 10%;
+
+  
+}
+
+/* ------ FORM ELEMENTS GOES HERE --------------------- */
+
+input
+{
+    -webkit-border-radius: 5px; //For Safari, etc.
+    -moz-border-radius: 5px; //For Mozilla, etc.
+    border-radius: 5px; //CSS3 Feature
+	padding: 5px 5px; line-height: 20px; 
+	font-size:21px;
+}
+
+.form1 {
+    width: 300px;
+	height: 50px; 
+	
+}
+
+.formLabel {
+    font-family:arial, helvetica, sans-serif;
+	font-size:22px;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	font-weight: bold;
+	text-align:LEFT;
+}
+
+.buttonstyle 
+{ 
+background: #4A8ACA; 
+
+color: #ffffff;
+height: 30px;
+width: 140px;
+margin-top: 3px;
+padding-bottom: 3px;
+}
+.buttonstyle:hover {background: #4A4A55; }
+
+
 

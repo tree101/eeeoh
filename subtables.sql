@@ -4,6 +4,7 @@
 -- drop tables 
 DROP TABLE  IF EXISTS  subject CASCADE;
 -- CREATE EXTENSION "uuid-ossp";
+-- create extension pgcrypto
 DROP TABLE  IF EXISTS  version CASCADE;
 DROP TABLE  IF EXISTS  sample CASCADE;
 
@@ -32,6 +33,19 @@ DROP TABLE  IF EXISTS  parentID CASCADE;
 
 
 
+--- password table will store hash created with bcrypt 
+-- currently there is no UI to create users or passwords sorry 
+CREATE TABLE userLogin(
+id SERIAL PRIMARY KEY, 
+firstname VARCHAR NOT NULL,
+lasname VARCHAR NOT NULL, 
+email VARCHAR NOT NULL,
+groupName VARCHAR, 
+notes TEXT 
+
+)
+
+
 -----------------------------------------------------------------------
 -- project table
 CREATE TABLE projects(
@@ -41,6 +55,17 @@ groupName VARCHAR,
 notes TEXT 
 
 )
+
+CREATE TABLE projects(
+id SERIAL PRIMARY KEY, 
+email VARCHAR NOT NULL,
+password VARCHAR, 
+project_id INT REFERENCES projects(id),
+notes TEXT 
+
+)
+
+
 
 -----------------------------------------------------------------------
 --- consent table 
@@ -63,6 +88,20 @@ notes TEXT
 );
 
 
+-- diagnosis table 
+
+CREATE TABLE diagnosis(
+id SERIAL PRIMARY KEY, 
+disease VARCHAR NOT NULL, 
+notes TEXT
+);
+
+CREATE TABLE diagnosisj(
+id SERIAL PRIMARY KEY, 
+diagnosis_id INT NOT NULL REFERENCES diagnosis(id), 
+sample_id uuid NOT NULL,
+notes TEXT
+);
 
 
 -----------------------------------------------------------------------
@@ -84,7 +123,7 @@ notes TEXT
 CREATE TABLE sample_type(
 id SERIAL PRIMARY KEY, 
 tissue VARCHAR NOT NULL, -- tissue, molecular, etc
-subtype INT NOT NULL REFERENCES  subtype(id), -- FK subtype tissue: Lung, Kidney, Blood, etc  molecular: RNA, DNA, Protein
+subtype_id INT NOT NULL REFERENCES  subtype(id), -- FK subtype tissue: Lung, Kidney, Blood, etc  molecular: RNA, DNA, Protein
 notes TEXT
 );
 
@@ -110,15 +149,6 @@ notes TEXT
 
 --- create a location of collection 
 --- location where sample was processed 
-
-
-
-CREATE TABLE location_collection(
-id SERIAL PRIMARY KEY, 
-location_collection VARCHAR NOT NULL, --  eg SIM1, Stanford Hospital, etc
-room VARCHAR,
-notes TEXT
-);
 
 
 ---  
@@ -173,10 +203,11 @@ notes TEXT
 );
 
 
-CREATE TABLE storage(
+CREATE TABLE location(
 id SERIAL PRIMARY KEY, 
-institution_name INT REFERENCES NOT NULL institution(id),
-building_name INT REFERENCES NOT NULL building(id), 
+            
+institution_name INT NOT NULL REFERENCES  institution(id),
+building_name INT REFERENCES building(id), 
 room_name INT REFERENCES room(id),
 storageUnit_name INT REFERENCES storageUnit(id),
 shelf_name INT REFERENCES shelf(id),  
@@ -184,3 +215,6 @@ box_name INT REFERENCES box(id),
 notes TEXT
 );
 
+--- example populate
+INSERT INTO projects (id, name, groupname, notes)
+VALUES (DEFAULT, 'Personalized Genomics', 'ASC', '');

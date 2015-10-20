@@ -3,10 +3,27 @@
 
 <title>Hello Please login</title>
 
-
+<div style="padding-left: 20%;">
+ <h1>PLEASE LOGIN</h1>
 <form action="" method="post">
-            <p><input type=text name=username>
-            <p><input type=submit value=Login>
-        </form>
-   
+
+<div class="formLabel"> Email </div>
+<input type=text name=email placeholder ="email" autofocus class="form-control" size="35">
+<div class="formLabel"> Password </div>
+
+<input type=password name=password placeholder="password" size="35">
+
+<p>
+<span>
+<input type=submit value=login class="buttonstyle"> 
+</span>
+
+<span style="padding-left:10px;">
+<a href="#"> REGISTER </a> 
+</span>
+
+</form>
+
+</div>  
+{{hashed}}
 {% endblock %}

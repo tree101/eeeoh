@@ -51,7 +51,7 @@ CREATE TABLE parentID(
 
 CREATE TABLE sample(
     id uuid NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(), -- PK
-    diagnosisj_id INT NOT NULL REFERENCES  diagnosisj(id), -- 
+    subject_id INT NOT NULL REFERENCES  subject(id), -- 
     
 	sample_type_id INT NOT NULL REFERENCES  sample_type(id), -- FK from type
 	sub_type INT NOT NULL REFERENCES  subtype(id), -- FK from subtype
