@@ -6,7 +6,7 @@ from flask import session
 from flask import redirect
 from flask import url_for
 from flask import escape
-
+import pickle
 
 from urlparse import urlparse, urljoin
 from flask.ext.wtf import Form
@@ -29,7 +29,9 @@ bcrypt = Bcrypt(app)
 lm = LoginManager()
 lm.init_app(app)
 # connect to postgres
-conn = psycopg2.connect("dbname='eeeoh' user='alexsql' host='localhost' password='eeeoooh'")
+with open('db.pickle') as f:
+    pwd = pickle.load(f)
+conn = psycopg2.connect(pwd[0])
 
 
 
