@@ -3,8 +3,10 @@
 
 <title>Hello </title>
 {% if name %}
-  <h1>You are logged in as: {{ name }}!</h1>
-  <a href='./logout'> logout now </a>
+  <div><span class="generalHi">You are logged in as: {{ name }} </span> 
+  ::  <span><a href='./logout'> logout now </a></span>
+  </div>
+  <br><br>
 {% else %}
   <h1>You need to login or create an account dude</h1>
   <a href='./login'> login here </a>
@@ -12,11 +14,15 @@
 
 {{content1}}
 <form>
-    <input type="text" size="5" name="a" id="a" onchange="checkFilled(this);"> +
-    <input type="text" size="5" name="b"> =
-    <span id="result">?</span>
-    <p><a href="javascript:void();" id="calculate">calculate server side</a>
-    <p><a href="javascript:void();" id="calculate2">subtracting</a>
+    <input type="hidden" name="do" id="do" value=1>
+    See Generic Table <input type="text" size="5" name="a" id="a" value="projects" onchange="checkFilled(this);"> 
+    <a href="javascript:void();" id="xtable"> see now </a>
+    
+	<p><a href="javascript:void();" id="table_userlogin"> <b>see userlogin with foreign key values display </b> </a>
       </form>
+  
+ <div class="CSSTableGenerator" >
+              <span id="result"></span>
+            </div> 
    
 {% endblock %}

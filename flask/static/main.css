@@ -54,6 +54,18 @@ padding-right: 10%;
   
 }
 
+/* general headings */
+
+.generalHi {
+    font-family:arial, helvetica, sans-serif;
+	font-size:22px;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	font-weight: bold;
+	text-align:LEFT;
+	color:#616161;
+}
+
 /* ------ FORM ELEMENTS GOES HERE --------------------- */
 
 input

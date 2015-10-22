@@ -33,35 +33,33 @@ DROP TABLE  IF EXISTS  parentID CASCADE;
 
 
 
---- password table will store hash created with bcrypt 
--- currently there is no UI to create users or passwords sorry 
-CREATE TABLE userLogin(
-id SERIAL PRIMARY KEY, 
-firstname VARCHAR NOT NULL,
-lasname VARCHAR NOT NULL, 
-email VARCHAR NOT NULL,
-groupName VARCHAR, 
-password VARCHAR, 
-notes TEXT 
 
-)
 
 
 -----------------------------------------------------------------------
 -- project table
+
+
+DROP TABLE  IF EXISTS  projects CASCADE;
 CREATE TABLE projects(
 id SERIAL PRIMARY KEY, 
 name VARCHAR NOT NULL,
 groupName VARCHAR, 
 notes TEXT 
 
-)
+);
 
-CREATE TABLE projects(
+
+--- password table will store hash created with bcrypt 
+-- currently there is no UI to create users or passwords sorry 
+DROP TABLE  IF EXISTS  userlogin CASCADE;
+CREATE TABLE userLogin(
 id SERIAL PRIMARY KEY, 
+firstname VARCHAR NOT NULL,
+lastname VARCHAR NOT NULL, 
 email VARCHAR NOT NULL,
+projects_id INT REFERENCES projects(id),
 password VARCHAR, 
-project_id INT REFERENCES projects(id),
 notes TEXT 
 
 )

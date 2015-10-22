@@ -1,4 +1,3 @@
- <script type=text/javascript>
     $(function() {
       
      
@@ -33,5 +32,3 @@ function checkFilled(e) {
         inputVal.style.backgroundColor = "red";
     }
 }
-
-  </script>
