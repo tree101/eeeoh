@@ -4,6 +4,10 @@
   <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
 	<link rel="stylesheet" href="{{ url_for('static', filename='table.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.css') }}" />
+	
+	<script src="{{url_for('static', filename='bootstrap.js')}}"></script>
+	
 	 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     
 	
@@ -69,19 +73,26 @@ function checkFilled(e) {
 	
   </head>
 
-  <body >
- 
-     <div class="tophead"><a href="#">HOME</a> | PROJECTS | <a href="javascript:void();" id="getTable">TABLES</a> | INSERT | CONTACT</div>
+  <body > <br><br>
+  <div class="container">
+     <div class="row">
+	 <div col-md-1></div>
+     <div col-md-11> 
+     <div class="tophead2""> HOME | PROJECTS | TABLES | INSERT | CONTACT</div>
+    </div>
+	</div>
     
-    
-    <div class="content">
+    <div class="row">
+	<div col-md-12> 
       {% block content %}{% endblock %} 
     </div>
+	
+	</div>
  
  
  
  
- 
+ </div>
   </body>
 
 </html>

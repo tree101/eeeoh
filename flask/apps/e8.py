@@ -17,7 +17,7 @@ from flask.ext.bcrypt import Bcrypt
 import psycopg2
 # login manager
 from flask.ext.login import LoginManager
-
+import json
 import re
 ##################### my own rollups
 from get import getTableHTML, sendSql
@@ -61,7 +61,8 @@ def go():
 		if do == 2:
 			out = xtable
 			head = ['name','email','group','notes','group id','name of group']
-			out=sendSql(conn,'SELECT userlogin.firstname, userlogin.email, userlogin.usertype, userlogin.notes, userlogin_projects.project_id, projects.name FROM userlogin INNER JOIN userlogin_projects ON userlogin.id = userlogin_projects.userlogin_id INNER JOIN projects ON userlogin_projects.project_id = projects.id',head)
+			data = {'fields':'userlogin.firstname, userlogin.email, userlogin.usertype, userlogin.notes, userlogin_projects.project_id, projects.name'}
+			out=sendSql(conn,'SELECT %s FROM userlogin INNER JOIN userlogin_projects ON userlogin.id = userlogin_projects.userlogin_id INNER JOIN projects ON userlogin_projects.project_id = projects.id' % data['fields'],head)
 		return jsonify(result=out)
     return redirect(url_for('login'))
 
@@ -85,6 +86,23 @@ def logout():
     # remove the username from the session if it's there
     session.pop('username', None)
     return redirect(url_for('index'))
+
+	
+##### viewing tables ok
+@app.route('/table_user')
+def table_user():
+    # check if user is login.  
+    if 'username' in session:
+		cur = conn.cursor()
+		head = ['name','email','group','notes','group id','name of group']
+		data = {'fields':'userlogin.firstname, userlogin.email, userlogin.usertype, userlogin.notes, userlogin_projects.project_id, projects.name'}
+		c = 'SELECT %s FROM userlogin INNER JOIN userlogin_projects ON userlogin.id = userlogin_projects.userlogin_id INNER JOIN projects ON userlogin_projects.project_id = projects.id' % data['fields'];
+		cur.execute(c)
+		rows = cur.fetchall()
+		rows = head + rows
+
+		return render_template("table_view.html",data=rows,name=escape(session['username']))
+    return redirect(url_for('login'))
 
 
 	

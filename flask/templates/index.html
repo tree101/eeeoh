@@ -1,28 +1,59 @@
 {% extends "base.html" %}
 {% block content %}
 
-<title>Hello </title>
+
 {% if name %}
+<br>
   <div><span class="generalHi">You are logged in as: {{ name }} </span> 
   ::  <span><a href='./logout'> logout now </a></span>
   </div>
+  <br>
+  
+  <div class="CSSTableGenerator">
+         <table>
+		 <tr> <td colspan="3">Main Tables </td>  </tr>
+		 
+		 <tr> <td width="70%"> Subjects </td>    <td> edit </td> <td> view </td>     </tr>
+		 <tr> <td> Samples </td>      <td> edit </td> <td> view </td>  </tr>
+		 </table>
+   </div>
+   
   <br><br>
-{% else %}
+  
+   
+   <div class="CSSTableGenerator">
+    <table>
+		 <tr> <td colspan="3"> Sub-tables </td>  </td>        </tr>
+		 
+		 <tr> <td width="70%"> Consents </td> <td> edit </td> <td> view </td> </tr>
+		 <tr> <td> Diagnosis </td> <td> edit </td> <td> view </td> </tr>
+		 </table>
+  
+   </div> 
+   
+    <br><br>
+   
+    <div class="CSSTableGenerator">
+   <table>
+		 <tr> <td colspan="3"> Administration </td>  </tr>
+		
+		 <tr> <td width="70%"> Projects </td> <td> edit </td> <td> view </td> </tr>
+		 <tr> <td> Users </td> <td> edit </td> <td> <a href="./table_user">view </td> </td> </tr>
+		 </table>
+  
+  
+  </div> 
+  
+
+  
+  
+  {% else %}
   <h1>You need to login or create an account dude</h1>
   <a href='./login'> login here </a>
 {% endif %}
 
 {{content1}}
-<form>
-    <input type="hidden" name="do" id="do" value=1>
-    See Generic Table <input type="text" size="5" name="a" id="a" value="projects" onchange="checkFilled(this);"> 
-    <a href="javascript:void();" id="xtable"> see now </a>
-    
-	<p><a href="javascript:void();" id="table_userlogin"> <b>see userlogin with foreign key values display </b> </a>
-      </form>
-  
- <div class="CSSTableGenerator" >
-              <span id="result"></span>
-            </div> 
+
+ 
    
 {% endblock %}

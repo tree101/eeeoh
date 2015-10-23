@@ -1,13 +1,17 @@
+import psycopg2
+from psycopg2.extensions import AsIs
 # takes a table name and returns a table in html with column names dude
 def getTableHTML(conn,table):
-    
-	
+		
+		
 		cur = conn.cursor()
 		# go get column name man
 		out = getColName(conn,table)
 		out = '<tr>'+out+'</tr>'; 
-		mydb = 'SELECT * from '+ table ; 
-		cur.execute(mydb)
+		
+		data = (table,)
+		mydb = "SELECT * from %(table)s;"; 
+		cur.execute(mydb,{"table": AsIs(table)})
 		rows = cur.fetchall()
 		
 		for row in rows:
@@ -21,10 +25,11 @@ def getTableHTML(conn,table):
 
 def getColName(conn,table):
 	cur = conn.cursor()
-	mydb = 'SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = \''+ table + '\'';
+	data = (table,)
+	mydb = 'SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = %s';
 
 	out='' 
-	cur.execute(mydb)
+	cur.execute(mydb,data)
 	rows = cur.fetchall()
 	if rows:
 		for col in rows:
@@ -40,15 +45,10 @@ def sendSql(conn,commands,head):
 		out='<tr>'
 		cur.execute(commands)
 		rows = cur.fetchall()
-		for h in head:
-			out = out+ '<td>' + h + '</td>'
 		
-		out = out + '</tr>';
+		r= []
 		for row in rows:
-			#out = row[1]
-			out = out+ '<tr>'+' '.join('<td>{0}</td>'.format(w) for w in row)+'</tr>'
-	     
-		out = '<table>' + out + '</table>'
+			r.append(row)
 		
-		return (out)
+		return (r)
 		
