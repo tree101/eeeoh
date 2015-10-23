@@ -49,53 +49,64 @@ notes TEXT
 
 );
 
+-- junction table here 
+DROP TABLE  IF EXISTS  userlogin_projects CASCADE;
+CREATE TABLE userlogin_projects(
+project_id INT REFERENCES projects(id),
+userLogin_id INT REFERENCES userLogin(id), 
+PRIMARY KEY (project_id, userLogin_id),
+notes TEXT 
+);
+
 
 --- password table will store hash created with bcrypt 
 -- currently there is no UI to create users or passwords sorry 
+CREATE TYPE usertype AS ENUM ('admin', 'power', 'view', 'other');
 DROP TABLE  IF EXISTS  userlogin CASCADE;
 CREATE TABLE userLogin(
 id SERIAL PRIMARY KEY, 
 firstname VARCHAR NOT NULL,
 lastname VARCHAR NOT NULL, 
 email VARCHAR NOT NULL,
-projects_id INT REFERENCES projects(id),
 password VARCHAR, 
-notes TEXT 
+usertype usertype,
+notes TEXT, 
 
 )
 
-
+ 
 
 -----------------------------------------------------------------------
 --- consent table 
 --- so far there are only two 
 --- Universal and Personalized
 
-
+DROP TABLE  IF EXISTS  consent CASCADE;
 CREATE TABLE consent(
 id SERIAL PRIMARY KEY, 
 form VARCHAR NOT NULL, 
 link VARCHAR, -- this could be a hyperlink of some sort to the actual document
 notes TEXT
 );
-
-CREATE TABLE consentj(
-id SERIAL PRIMARY KEY, 
+DROP TABLE  IF EXISTS  sample_consent CASCADE;
+CREATE TABLE sample_consent(
+sample_id uuid NOT NULL REFERENCES sample(id), 
 consent_id INT NOT NULL REFERENCES consent(id), 
-sample_id uuid NOT NULL,
+PRIMARY KEY (sample_id, consent_id),
 notes TEXT
 );
 
 
 -- diagnosis table 
-
+DROP TABLE  IF EXISTS  diagnosis CASCADE;
 CREATE TABLE diagnosis(
 id SERIAL PRIMARY KEY, 
 disease VARCHAR NOT NULL, 
 notes TEXT
 );
 
-CREATE TABLE diagnosisj(
+DROP TABLE  IF EXISTS  sample_diagnosis CASCADE;
+CREATE TABLE sample_diagnosis(
 id SERIAL PRIMARY KEY, 
 diagnosis_id INT NOT NULL REFERENCES diagnosis(id), 
 sample_id uuid NOT NULL,

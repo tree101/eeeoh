@@ -3,7 +3,7 @@
 --- sample
 --- version 
 
-
+ 
 ------- comments
 --- version table stores id and referencing table, with a JSON type to store fields
 --- unique to the old record
@@ -24,12 +24,12 @@ lognotes TEXT
 
 
 CREATE TYPE sex AS ENUM ('M', 'F', 'UNK', 'OTHER');
+DROP TABLE  IF EXISTS  subject CASCADE;
 CREATE TABLE subject(
 id uuid NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(), 
 users VARCHAR NOT NULL, --from current user (store in session cookie on login)
 age INT,
 sex sex NOT NULL,
-consentj_id INT REFERENCES consentj(id),  
 diagnosis_id INT REFERENCES diagnosis(id),
 timestamp TIMESTAMP(2),
 project_id INT REFERENCES projects(id),
