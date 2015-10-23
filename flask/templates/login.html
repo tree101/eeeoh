@@ -1,59 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
 
-<title>Hello Please login</title>
 
-<div style="padding-left: 20%;">
- <h1>PLEASE LOGIN</h1>
-<form action="" method="post">
+<br><br>
 
-<div class="formLabel"> Email </div>
-<input type=text name=email placeholder ="email" autofocus class="form-control" size="35">
-<div class="formLabel"> Password </div>
 
-<input type=password name=password placeholder="password" size="35">
-
-<p>
-<span>
-<input type=submit value=login class="buttonstyle"> 
-</span>
-
-<span style="padding-left:10px;">
-<a href="#"> REGISTER </a> 
-</span>
-
-</form>
-</div> 
-
- <div class="row">
-<div col-md-4> 
-     
-	 
-    </div>
-
-<div col-md-4> 
-     <form role="form">
+  <div class="row">
+    <div class="col-md-4" ></div>
+    <div class="col-md-4" >
+	
+	    <form role="form" action="" method="post">
   <div class="form-group">
     <label for="email">Email address:</label>
-    <input type="email" class="form-control" id="email">
+    <input type="email" class="form-control" id="email" name="email" >
   </div>
   <div class="form-group">
     <label for="pwd">Password:</label>
-    <input type="password" class="form-control" id="pwd">
+    <input type="password" class="form-control" id="password" name="password">
   </div>
   <div class="checkbox">
     <label><input type="checkbox"> Remember me</label>
   </div>
   <button type="submit" class="btn btn-default">Submit</button>
 </form>
-	 
-    </div>
-
-<div col-md-4> 
-     
-	 
-    </div>	
 	
- 
-{{hashed}}
+	
+	</div>
+    <div class="col-md-4" ></div>
+  </div>
+
 {% endblock %}
