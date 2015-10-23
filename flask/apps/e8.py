@@ -47,7 +47,7 @@ def index():
 
 @app.route('/go')
 def go():
-    # check if user is login.  
+    # reserving this for AJAX calls  
     if 'username' in session:
 		
 		## use the do to figure out what the user wants. 
@@ -94,6 +94,7 @@ def table_user():
     # check if user is login.  
     if 'username' in session:
 		cur = conn.cursor()
+		numrows = request.args.get('numrows')
 		head = ['name','email','group','notes','group id','name of group']
 		data = {'fields':'userlogin.firstname, userlogin.email, userlogin.usertype, userlogin.notes, userlogin_projects.project_id, projects.name'}
 		c = 'SELECT %s FROM userlogin INNER JOIN userlogin_projects ON userlogin.id = userlogin_projects.userlogin_id INNER JOIN projects ON userlogin_projects.project_id = projects.id' % data['fields'];
