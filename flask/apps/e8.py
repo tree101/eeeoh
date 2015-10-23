@@ -60,9 +60,7 @@ def go():
 			out = getTableHTML(conn,str(xtable))
 		if do == 2:
 			out = xtable
-			head = ['name','email','group','notes','group id','name of group']
-			data = {'fields':'userlogin.firstname, userlogin.email, userlogin.usertype, userlogin.notes, userlogin_projects.project_id, projects.name'}
-			out=sendSql(conn,'SELECT %s FROM userlogin INNER JOIN userlogin_projects ON userlogin.id = userlogin_projects.userlogin_id INNER JOIN projects ON userlogin_projects.project_id = projects.id' % data['fields'],head)
+			
 		return jsonify(result=out)
     return redirect(url_for('login'))
 
@@ -94,13 +92,15 @@ def table_user():
     # check if user is login.  
     if 'username' in session:
 		cur = conn.cursor()
-		numrows = request.args.get('numrows')
+		numrowstart = int(request.args.get('numrows'))
+		numrowend = numrowstart+ 50
 		head = ['name','email','group','notes','group id','name of group']
 		data = {'fields':'userlogin.firstname, userlogin.email, userlogin.usertype, userlogin.notes, userlogin_projects.project_id, projects.name'}
-		c = 'SELECT %s FROM userlogin INNER JOIN userlogin_projects ON userlogin.id = userlogin_projects.userlogin_id INNER JOIN projects ON userlogin_projects.project_id = projects.id' % data['fields'];
-		cur.execute(c)
+		c = 'SELECT userlogin.firstname, userlogin.email, userlogin.usertype, userlogin.notes, userlogin_projects.project_id, projects.name FROM userlogin INNER JOIN userlogin_projects ON userlogin.id = userlogin_projects.userlogin_id INNER JOIN projects ON userlogin_projects.project_id = projects.id LIMIT %s OFFSET %s';
+		cur.execute(c, (numrowend,numrowstart)) 
 		rows = cur.fetchall()
-		rows = head + rows
+		#rows.append(head)
+		rows.insert(0,head)
 
 		return render_template("table_view.html",data=rows,name=escape(session['username']))
     return redirect(url_for('login'))

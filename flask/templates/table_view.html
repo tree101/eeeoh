@@ -9,17 +9,19 @@
   </div>
   <br>
   
-
+<div class="CSSTableGenerator">
+<table>
    {% for row in data %}
-		
+		<tr>
       {% for c in row %}
-	     c1: {{c}} |
+	     <td> {{c}} </td>
 	  {% endfor %}
-	  <br>
+	  </tr>
     {% endfor %}
-<hr>
-  {{data}}
-  
+
+</table>  
+</div>
+ 
   {% else %}
   <h1>You need to login or create an account dude</h1>
   <a href='./login'> login here </a>
