@@ -11,17 +11,9 @@ notes TEXT
 );
 
 
--- junction table here 
-DROP TABLE  IF EXISTS  userlogin_projects CASCADE;
-CREATE TABLE userlogin_projects(
-project_id INT REFERENCES projects(id),
-userLogin_id INT REFERENCES userLogin(id), 
-PRIMARY KEY (project_id, userLogin_id),
-notes TEXT 
-);
-
 -- uers 
 CREATE TYPE usertype AS ENUM ('admin', 'power', 'view', 'other');
+
 DROP TABLE  IF EXISTS  userlogin CASCADE;
 CREATE TABLE userLogin(
 id SERIAL PRIMARY KEY, 
@@ -29,10 +21,22 @@ firstname VARCHAR NOT NULL,
 lastname VARCHAR NOT NULL, 
 email VARCHAR NOT NULL,
 password VARCHAR, 
-usertype usertype,
+is_admin INT,
 notes TEXT, 
 
 )
+
+-- junction table here 
+DROP TABLE  IF EXISTS  userlogin_projects CASCADE;
+CREATE TABLE userlogin_projects(
+project_id INT REFERENCES projects(id),
+userLogin_id INT REFERENCES userLogin(id), 
+usertype usertype,
+PRIMARY KEY (project_id, userLogin_id),
+notes TEXT 
+);
+
+
 
 
 
@@ -49,7 +53,8 @@ notes TEXT
 DROP TABLE  IF EXISTS  subject_consent CASCADE;
 CREATE TABLE subject_consent(
 subject_id uuid NOT NULL REFERENCES subject(id), 
-consent_id INT NOT NULL REFERENCES consent(id), 
+consent_id INT NOT NULL REFERENCES consent(id),
+timestamp TIMESTAMP(2), 
 PRIMARY KEY (subject_id, consent_id),
 notes TEXT
 );
@@ -92,14 +97,7 @@ notes TEXT
 
 -- ** keeps track of where each samples orignates from 
 
-DROP TABLE  IF EXISTS  parentID CASCADE;
 
-CREATE TABLE parentID(	
-	child  uuid,
-	parent uuid,
-	PRIMARY KEY (child, parent)
-	);
-	
 -- ** sample  
 
 DROP TABLE  IF EXISTS  subtype CASCADE;
@@ -128,68 +126,26 @@ notes TEXT
 
 -- storage locations 
 
-DROP TABLE  IF EXISTS  institution CASCADE;
-
-
-CREATE TABLE institution(
-id SERIAL PRIMARY KEY, 
-name VARCHAR NOT NULL,
-notes TEXT 
-);
-DROP TABLE  IF EXISTS  building CASCADE;
-CREATE TABLE building(
-id SERIAL PRIMARY KEY, 
-name VARCHAR NOT NULL,
-notes TEXT 
-);
-DROP TABLE  IF EXISTS  room CASCADE;
-CREATE TABLE room(
-id SERIAL PRIMARY KEY, 
-name VARCHAR NOT NULL,
-notes TEXT 
-);
-
-DROP TABLE  IF EXISTS  storageUnit CASCADE;
-CREATE TABLE storageUnit(
-id SERIAL PRIMARY KEY, 
-name VARCHAR NOT NULL,
-notes TEXT 
-);
-
-DROP TABLE  IF EXISTS  shelf CASCADE;
-CREATE TABLE shelf(
-id SERIAL PRIMARY KEY, 
-name VARCHAR NOT NULL,
-notes TEXT 
-);
-
-DROP TABLE  IF EXISTS  box CASCADE;
-CREATE TABLE box(
-id SERIAL PRIMARY KEY, 
-name VARCHAR NOT NULL,
-notes TEXT 
-);
-
--- position really depends on what the intended storage is. 
-DROP TABLE  IF EXISTS  position CASCADE;
-CREATE TABLE position(
-id SERIAL PRIMARY KEY, 
-name VARCHAR NOT NULL,
-notes TEXT 
-);
-
 DROP TABLE  IF EXISTS  location CASCADE;
-CREATE TABLE location(
-id SERIAL PRIMARY KEY, 
-            
-institution_name INT NOT NULL REFERENCES  institution(id),
-building_name INT REFERENCES building(id), 
-room_name INT REFERENCES room(id),
-storageUnit_name INT REFERENCES storageUnit(id),
-shelf_name INT REFERENCES shelf(id),  
-box_name INT REFERENCES box(id),   
-notes TEXT
-);
+
+CREATE TABLE location (
+id SERIAL PRIMARY KEY,
+parent_id INT REFERENCES location(id),
+name VARCHAR NOT NULL,
+parent_row INT,
+parent_col INT,
+rows INT,     -- rows available at this level
+cols INT,      -- cols available at this level
+notes TEXT)
+
+DROP TABLE  IF EXISTS  location_project CASCADE;
+CREATE TABLE location_project(
+location_id INT REFERENCES location(id), 
+project_id INT REFERENCES project(id), 
+PRIMARY KEY(location_id, project_id)
+)
+
+
 
 DROP TABLE  IF EXISTS  sample CASCADE;
 CREATE TABLE sample(
@@ -209,11 +165,20 @@ CREATE TABLE sample(
 	label VARCHAR NOT NULL, -- this is still to be decided contingent on what labeling machine we need
 
 
-	parentID_id uuid REFERENCES sample(id),
-	project_id INT REFERENCES projects(id),
+	parent uuid REFERENCES sample(id),
+	
     notes TEXT	
 
 	);
+
+DROP TABLE  IF EXISTS  parentID CASCADE;
+
+CREATE TABLE sample_parent_child(	
+	child  uuid NOT NULL REFERENCES sample(id),
+	parent uuid NOT NULL REFERENCES sample(parent) ,
+	PRIMARY KEY (child, parent)
+	);
+		
 	
 -- end sample table creations 
 
