@@ -22,6 +22,7 @@ import re
 ##################### my own rollups
 from get import getTableHTML, sendSql
 
+
 app = Flask(__name__)
 app.config.from_object('config')
 
@@ -86,7 +87,7 @@ def logout():
     return redirect(url_for('index'))
 
 	
-##### viewing tables ok
+
 @app.route('/table_user')
 def table_user():
     # check if user is login.  
@@ -94,9 +95,9 @@ def table_user():
 		cur = conn.cursor()
 		numrowstart = int(request.args.get('numrows'))
 		numrowend = numrowstart+ 50
-		head = ['name','email','group','notes','group id','name of group']
-		data = {'fields':'userlogin.firstname, userlogin.email, userlogin.usertype, userlogin.notes, userlogin_projects.project_id, projects.name'}
-		c = 'SELECT userlogin.firstname, userlogin.email, userlogin.usertype, userlogin.notes, userlogin_projects.project_id, projects.name FROM userlogin INNER JOIN userlogin_projects ON userlogin.id = userlogin_projects.userlogin_id INNER JOIN projects ON userlogin_projects.project_id = projects.id LIMIT %s OFFSET %s';
+		head = ['name','email','notes','user type','name of project']
+		
+		c = 'SELECT userlogin.firstname, userlogin.email, userlogin.notes, userlogin_projects.usertype, projects.name FROM userlogin INNER JOIN userlogin_projects ON userlogin.id = userlogin_projects.userlogin_id INNER JOIN projects ON userlogin_projects.project_id = projects.id LIMIT %s OFFSET %s;';
 		cur.execute(c, (numrowend,numrowstart)) 
 		rows = cur.fetchall()
 		#rows.append(head)
@@ -104,8 +105,6 @@ def table_user():
 
 		return render_template("table_view.html",data=rows,name=escape(session['username']))
     return redirect(url_for('login'))
-
-
 	
 
 
@@ -137,4 +136,7 @@ def checkpassword(email,pw):
 
 	
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+	
+	
+	app.run(host='0.0.0.0', port=5000, debug=True)
+	
