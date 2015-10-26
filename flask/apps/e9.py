@@ -21,7 +21,7 @@ from flask.ext.login import LoginManager
 import json
 import re
 ##################### my own rollups
-#from get import getTableHTML, sendSql
+from get import *
 
 
 
@@ -73,7 +73,7 @@ def login():
 	if (passornot==0):
 		return render_template('login.html')
 	else:
-		session['username'] = passornot
+		session['username'] = email
 		return redirect(url_for('index'))
     return render_template('login.html')
 

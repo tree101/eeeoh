@@ -42,4 +42,13 @@ def sendSql(conn,commands,head):
 		
 		
 		return (rows)
+
+
+
+def checkuser(cur, user):
+
+		c = 'SELECT is_admin FROM userlogin WHERE email = %s;'
+		cur.execute(c,(user,))
+		rows = cur.fetchall()
 		
+		return (rows[0][0])

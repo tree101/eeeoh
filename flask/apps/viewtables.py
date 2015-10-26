@@ -22,7 +22,7 @@ from flask.ext.login import LoginManager
 import json
 import re
 ##################### my own rollups
-#from get import getTableHTML, sendSql
+from get import *
 
 
 
@@ -40,7 +40,11 @@ conn = psycopg2.connect(pwd[0])
 def table_user():
     # check if user is login.  
     if 'username' in session:
+		# needs to check if user is administrator here. 
 		cur = conn.cursor()
+		admin = checkuser(cur, session['username'])
+		if (admin != 1):
+			return render_template("error.html",error="you need to be a amdiminstrator to access this",name=escape(session['username'])   )
 		numrowstart = int(request.args.get('numrows'))
 		numrowend = numrowstart+ 50
 		head = ['name','email','notes','user type','name of project']
@@ -54,6 +58,28 @@ def table_user():
 		return render_template("table_view.html",data=rows,name=escape(session['username']))
     return redirect(url_for('login'))
 
+
+@app.route('/table_projects')
+def table_projects():
+    # check if user is login.  
+    if 'username' in session:
+		# needs to check if user is administrator here. 
+		cur = conn.cursor()
+		admin = checkuser(cur, session['username'])
+		if (admin != 1):
+			return render_template("error.html",error="you need to be a amdiminstrator to access this",name=escape(session['username'])   )
+		numrowstart = int(request.args.get('numrows'))
+		numrowend = numrowstart+ 50
+		head = ['ID','Name','Group Name','Notes']
+		
+		c = 'SELECT id, name, groupname,notes FROM projects LIMIT %s OFFSET %s;';
+		cur.execute(c, (numrowend,numrowstart)) 
+		rows = cur.fetchall()
+		#rows.append(head)
+		rows.insert(0,head)
+
+		return render_template("table_view.html",data=rows,name=escape(session['username']))
+    return redirect(url_for('login'))
 	
 	
 @app.route('/table_test')
