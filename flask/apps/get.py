@@ -52,3 +52,13 @@ def checkuser(cur, user):
 		rows = cur.fetchall()
 		
 		return (rows[0][0])
+		
+
+def getChild_location(cur, parent):
+		for child in parent: 
+			
+			c = ''
+			#cur.execute(c,(user,))
+			#rows = cur.fetchall()
+		
+		

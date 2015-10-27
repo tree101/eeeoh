@@ -113,7 +113,40 @@ def table_projects():
 
 		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo=whatdidyoudo,route='table_projects')
     return redirect(url_for('login'))
-	
+
+
+@app.route('/table_location', methods=['GET', 'POST'])
+def table_location():
+    # check if user is login.  
+    if 'username' in session:
+		# needs to check if user is administrator here. 
+		cur = conn.cursor()
+		admin = checkuser(cur, session['username'])
+		# not sure if this needs to be an admin account
+		# change back to 1 if you want admin access only 
+		if (admin == 100):
+			return render_template("error.html",error="you need to be a amdiminstrator to access this",name=escape(session['username'])   )
+		# now check if this is view only or add record then view 
+		action = int(request.args.get('action'))
+		# add record if action ==1 
+		# add record if action == -1
+		
+		whatdidyoudo = 0
+		parent_id = int(request.args.get('parent_id'))
+		head = ['id','name','rows','cols','notes','delete','more']
+		if (parent_id  == 0):
+			c = 'SELECT id parent_id, name, rows, cols, notes FROM location WHERE parent_id is NULL ; ';
+			cur.execute(c)
+		else:
+			c = 'SELECT id parent_id, name, rows, cols, notes FROM location WHERE parent_id = %s ; ';
+			cur.execute(c,(parent_id, )) 
+		
+		rows = cur.fetchall()
+		
+
+		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo=whatdidyoudo,route='table_location',location=1, back=0)
+    return redirect(url_for('login'))
+    
 
 
 @app.route('/table_logger', methods=['GET', 'POST'])
@@ -138,7 +171,7 @@ def table_logger():
 		#rows.insert(0,head)
 		# lets not do the above; its easier but to stringent, instead pass header info as a seperate var
 
-		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo='',route='table_logger')
+		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo='viewing log',route='table_logger')
     return redirect(url_for('login'))
     
 

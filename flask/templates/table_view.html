@@ -24,11 +24,26 @@
 	     <td> {{c}} </td>
 	  {% endfor %}
 	  <td>  <a href="./{{route}}?action=-1&numrows=0&id={{row[0]}}"> delete </a> </td>
+	  
+			{% if location %}
+			<td>  <a href="./{{route}}?numrows=0&action=0&parent_id={{row[0]}}"> more... </a> </td>
+			{% endif %}
+	  
+	  
 	  </tr>
     {% endfor %}
 
 </table>  
+
+
 </div>
+
+<br> 
+
+{% if location %}
+			<td>  <a href="./{{route}}?numrows=0&action=0&parent_id={{back}}"> back to parent </a> </td>
+			{% endif %}
+
  
   {% else %}
   <h1>You need to login or create an account dude</h1>
