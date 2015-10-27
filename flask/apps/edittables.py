@@ -41,6 +41,13 @@ def edit_projects():
     # check if user is login.  
     if 'username' in session:
 		# needs to check if user is administrator here. 
-		
-		return render_template("edit_projects.html",name=escape(session['username']))
+		# open connection to projects and populate this for instant searching
+		cur = conn.cursor()
+		c = 'SELECT id, name,notes FROM projects';
+		cur.execute(c) 
+		rows = cur.fetchall()
+		c = 'SELECT DISTINCT groupname FROM projects';
+		cur.execute(c)
+		rows2 = cur.fetchall()
+		return render_template("edit_projects.html",name=escape(session['username']),isearch=rows,isearch2=rows2)
     return redirect(url_for('login'))

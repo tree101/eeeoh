@@ -23,7 +23,7 @@
       {% for c in row %}
 	     <td> {{c}} </td>
 	  {% endfor %}
-	  <td>  <a href="./table_projects?action=-1&numrows=0&id={{row[0]}}"> delete </a> </td>
+	  <td>  <a href="./{{route}}?action=-1&numrows=0&id={{row[0]}}"> delete </a> </td>
 	  </tr>
     {% endfor %}
 
