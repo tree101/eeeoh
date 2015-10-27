@@ -2,13 +2,23 @@
 <html>
 
   <head>
+	  
+	  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+      <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
+	 
+	  <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.js"></script>
+	  <script src="{{url_for('static', filename='bootstrap.js')}}"></script>
+	  
+	  
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
 	<link rel="stylesheet" href="{{ url_for('static', filename='table.css') }}" />
 	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.css') }}" />
 	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-theme.css') }}" />
-	<script src="{{url_for('static', filename='bootstrap.js')}}"></script>
 	
-	 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	
+	
+	
+	
     
 	
 	{% if title %}
@@ -55,6 +65,27 @@
 				return false; });
 	 
 
+  $('#project-form').validate({
+        rules: {
+            name: {
+                minlength: 2,
+                required: true
+            },
+            groupname: {
+				minlength: 3,
+                required: true
+                
+            },
+           
+        },
+       
+        success: function (element) {
+            element.text('good').addClass('valid')
+                .closest('.form-group').removeClass('error').addClass('success');
+        }
+    });
+
+
 	  
 });
 
@@ -69,6 +100,16 @@ function checkFilled(e) {
     }
 }
 
+
+
+
+	
+
+
+
+
+
+
   </script>
 	
   </head>
@@ -78,7 +119,7 @@ function checkFilled(e) {
      <div class="row">
 	 <div col-md-1></div>
      <div col-md-11> 
-     <div class="tophead2""> HOME | PROJECTS | TABLES | INSERT | CONTACT</div>
+     <div class="tophead2"> <a href="./">HOME</a> | PROJECTS | TABLES | INSERT | CONTACT</div>
     </div>
 	</div>
     

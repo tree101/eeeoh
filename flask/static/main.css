@@ -127,5 +127,19 @@ padding-bottom: 3px;
 }
 .buttonstyle:hover {background: #4A4A55; }
 
+/* overides jquery validated colors */
 
+.error {
+   color: red;
+   
+}
 
+.success {
+   color: green;
+  
+}
+
+.valid {
+   color: green;
+   
+}
