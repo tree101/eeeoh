@@ -124,11 +124,18 @@ def table_location():
 		admin = checkuser(cur, session['username'])
 		# not sure if this needs to be an admin account
 		# change back to 1 if you want admin access only 
+		whatdidyoudo = 0 # setting this to 0 is important to produce an additiona link to render children view
 		if (admin == 100):
 			return render_template("error.html",error="you need to be a amdiminstrator to access this",name=escape(session['username'])   )
 		# now check if this is view only or add record then view 
 		action = int(request.args.get('action'))
-		parent_id = int(request.args.get('parent_id'))
+		try:
+			parent_id = int(request.args.get('parent_id'))
+		except:
+			pass
+		
+		
+		
 		# add record if action ==1 
 		# add record if action == -1
 		if action == 1: 
@@ -141,9 +148,17 @@ def table_location():
 			conn.commit() 
 			# see child instead
 			parent_id = int(parent_id2[0])
+			whatdidyoudo = "%s Inserted a new record into location form = %s notes = %s" % (session['username'], nname,notes )
 			# return 
-		whatdidyoudo = 0 # setting this to 0 is important to produce an additiona link to render children view
 		
+		if action == -1:
+			return render_template("error.html",error="Sorry at this moment deleting from storage is not allow",name=escape(session['username'])   )
+			
+		
+		if action != 0:  
+			logc = 'INSERT INTO logger (tablename, username,timestamp,lognotes) VALUES (\'location\',%s,DEFAULT,%s);'
+			cur.execute(logc, (session['username'],whatdidyoudo)) 
+			conn.commit()
 		
 		head = ['id','parent','name','notes','delete','more']
 		if (parent_id  == 0):
@@ -156,7 +171,7 @@ def table_location():
 		rows = cur.fetchall()
 		
 
-		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo=whatdidyoudo,route='table_location',location=1, back=0)
+		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo=0,route='table_location',location=1, back=0)
     return redirect(url_for('login'))
     
 
@@ -169,6 +184,7 @@ def table_diagnosis():
 		admin = checkuser(cur, session['username'])
 		# not sure if this needs to be an admin account
 		# change back to 1 if you want admin access only 
+		whatdidyoudo = 0
 		if (admin == 100):
 			return render_template("error.html",error="you need to be a amdiminstrator to access this",name=escape(session['username'])   )
 		# now check if this is view only or add record then view 
@@ -183,8 +199,19 @@ def table_diagnosis():
 			cdiagnosis = 'INSERT INTO diagnosis (disease,notes) VALUES (%s,%s);'
 			cur.execute(cdiagnosis,(diagnosis,notes))
 			conn.commit() 
-			 
-		whatdidyoudo = "view"
+			whatdidyoudo = "%s Inserted a new record into diagnosis form = %s notes = %s" % (session['username'], diagnosis,notes )
+		
+		if action == -1:
+			id = request.args.get('id')
+			delete_this = 'DELETE FROM diagnosis WHERE id = %s;';
+			cur.execute(delete_this, (id,)) 
+			conn.commit()
+			whatdidyoudo = "%s just deleted id %s from table diagnosis " % (session['username'],id)
+		
+		if action != 0:  
+			logc = 'INSERT INTO logger (tablename, username,timestamp,lognotes) VALUES (\'diagnosis\',%s,DEFAULT,%s);'
+			cur.execute(logc, (session['username'],whatdidyoudo)) 
+			conn.commit()
 		
 		numrowstart = int(request.args.get('numrows'))
 		numrowend = numrowstart+ 50
@@ -200,6 +227,58 @@ def table_diagnosis():
     return redirect(url_for('login'))
 
 
+@app.route('/table_consent', methods=['GET', 'POST'])
+def table_consent():
+    # check if user is login.  
+    if 'username' in session:
+		# needs to check if user is administrator here. 
+		cur = conn.cursor()
+		admin = checkuser(cur, session['username'])
+		# not sure if this needs to be an admin account
+		# change back to 1 if you want admin access only 
+		if (admin == 100):
+			return render_template("error.html",error="you need to be a amdiminstrator to access this",name=escape(session['username'])   )
+		# now check if this is view only or add record then view 
+		action = int(request.args.get('action'))
+		whatdidyoudo = 0 # important to set to 0 otherwise it will log this activity
+		# add record if action ==1 
+		# add record if action == -1
+		if action == 1: 
+			consent = request.args.get('consent_name')
+			notes = request.args.get('notes')
+			cconsent = 'INSERT INTO consent (form,notes) VALUES (%s,%s);'
+			cur.execute(cconsent,(consent,notes))
+			conn.commit()
+			whatdidyoudo = "%s Inserted a new record into consent form = %s notes = %s" % (session['username'], consent,notes ) 
+		if action == -1:
+			id = request.args.get('id')
+			delete_this = 'DELETE FROM consent WHERE id = %s;';
+			cur.execute(delete_this, (id,)) 
+			conn.commit()
+			whatdidyoudo = "%s just deleted id %s from table consent " % (session['username'],id)
+			 
+		# now that all the action is completed - lets store it into the logger
+		if action != 0:  
+			logc = 'INSERT INTO logger (tablename, username,timestamp,lognotes) VALUES (\'consent\',%s,DEFAULT,%s);'
+			cur.execute(logc, (session['username'],whatdidyoudo)) 
+			conn.commit()
+		
+		numrowstart = int(request.args.get('numrows'))
+		numrowend = numrowstart+ 50
+		head = ['id','form','links','notes','delete']
+		
+		c = 'SELECT id, form, link, notes FROM consent LIMIT %s OFFSET %s;';
+		cur.execute(c, (numrowend,numrowstart)) 
+		
+		rows = cur.fetchall()
+		
+
+		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo=whatdidyoudo,route='table_consent')
+    return redirect(url_for('login'))
+    
+
+
+
 @app.route('/table_logger', methods=['GET', 'POST'])
 def table_logger():
     # check if user is login.  
@@ -211,6 +290,10 @@ def table_logger():
 			return render_template("error.html",error="you need to be a amdiminstrator to access this",name=escape(session['username'])   )
 		# now check if this is view only or add record then view 
 		action = int(request.args.get('action'))
+		
+		if action == -1:
+			return render_template("error.html",error="Sorry at this moment deleting from logger is not allow",name=escape(session['username'])   )
+		
 		# get limits, currently limiting 50 per search
 		numrowstart = int(request.args.get('numrows'))
 		numrowend = numrowstart+ 50
