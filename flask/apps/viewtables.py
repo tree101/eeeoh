@@ -279,6 +279,106 @@ def table_consent():
 
 
 
+@app.route('/table_subtype', methods=['GET', 'POST'])
+def table_subtype():
+    # check if user is login.  
+    if 'username' in session:
+		# needs to check if user is administrator here. 
+		cur = conn.cursor()
+		admin = checkuser(cur, session['username'])
+		# not sure if this needs to be an admin account
+		# change back to 1 if you want admin access only 
+		if (admin == 100):
+			return render_template("error.html",error="you need to be a amdiminstrator to access this",name=escape(session['username'])   )
+		# now check if this is view only or add record then view 
+		action = int(request.args.get('action'))
+		whatdidyoudo = 0 # important to set to 0 otherwise it will log this activity
+		# add record if action ==1 
+		# add record if action == -1
+		if action == 1: 
+			subtype = request.args.get('subtype_name')
+			notes = request.args.get('notes')
+			csubtype = 'INSERT INTO subtype (subtype,notes) VALUES (%s,%s);'
+			cur.execute(csubtype,(subtype,notes))
+			conn.commit()
+			whatdidyoudo = "%s Inserted a new record into subtype:  %s notes: %s" % (session['username'], subtype,notes ) 
+		if action == -1:
+			id = request.args.get('id')
+			delete_this = 'DELETE FROM subtype WHERE id = %s;';
+			cur.execute(delete_this, (id,)) 
+			conn.commit()
+			whatdidyoudo = "%s just deleted id %s from table subtype " % (session['username'],id)
+			 
+		# now that all the action is completed - lets store it into the logger
+		if action != 0:  
+			logc = 'INSERT INTO logger (tablename, username,timestamp,lognotes) VALUES (\'subtype\',%s,DEFAULT,%s);'
+			cur.execute(logc, (session['username'],whatdidyoudo)) 
+			conn.commit()
+		
+		numrowstart = int(request.args.get('numrows'))
+		numrowend = numrowstart+ 50
+		head = ['id','subtype','notes','delete']
+		
+		c = 'SELECT id, subtype, notes FROM subtype LIMIT %s OFFSET %s;';
+		cur.execute(c, (numrowend,numrowstart)) 
+		
+		rows = cur.fetchall()
+		
+
+		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo=whatdidyoudo,route='table_subtype')
+    return redirect(url_for('login'))
+    
+             
+@app.route('/table_sampletype', methods=['GET', 'POST'])
+def table_sampletype():
+    # check if user is login.  
+    if 'username' in session:
+		# needs to check if user is administrator here. 
+		cur = conn.cursor()
+		admin = checkuser(cur, session['username'])
+		# not sure if this needs to be an admin account
+		# change back to 1 if you want admin access only 
+		if (admin == 100):
+			return render_template("error.html",error="you need to be a amdiminstrator to access this",name=escape(session['username'])   )
+		# now check if this is view only or add record then view 
+		action = int(request.args.get('action'))
+		whatdidyoudo = 0 # important to set to 0 otherwise it will log this activity
+		# add record if action ==1 
+		# add record if action == -1
+		if action == 1: 
+			subtype = request.args.get('subtype_name')
+			sampletype = request.args.get('sampletype_name')
+			notes = request.args.get('notes')
+			csubtype = 'INSERT INTO sampletype (tissue,subtype_id,notes) VALUES (%s,%s,%s);'
+			cur.execute(csubtype,(sampletype,subtype,notes))
+			conn.commit()
+			whatdidyoudo = "%s Inserted a new record into sampletype:  %s %s notes: %s" % (session['username'], sampletype,subtype,notes ) 
+		if action == -1:
+			id = request.args.get('id')
+			delete_this = 'DELETE FROM sampletype WHERE id = %s;';
+			cur.execute(delete_this, (id,)) 
+			conn.commit()
+			whatdidyoudo = "%s just deleted id %s from table sampletype " % (session['username'],id)
+			 
+		# now that all the action is completed - lets store it into the logger
+		if action != 0:  
+			logc = 'INSERT INTO logger (tablename, username,timestamp,lognotes) VALUES (\'sampletype\',%s,DEFAULT,%s);'
+			cur.execute(logc, (session['username'],whatdidyoudo)) 
+			conn.commit()
+		
+		numrowstart = int(request.args.get('numrows'))
+		numrowend = numrowstart+ 50
+		head = ['id','Tissue type','subtype','notes','delete']
+		
+		c = 'SELECT sampletype.id, sampletype.tissue, subtype.subtype, sampletype.notes FROM sampletype INNER JOIN subtype ON sampletype.subtype_id = subtype.id LIMIT %s OFFSET %s;';
+		cur.execute(c, (numrowend,numrowstart)) 
+		
+		rows = cur.fetchall()
+		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo=whatdidyoudo,route='table_sampletype')
+    return redirect(url_for('login'))
+
+
+
 @app.route('/table_logger', methods=['GET', 'POST'])
 def table_logger():
     # check if user is login.  

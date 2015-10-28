@@ -96,3 +96,40 @@ def edit_consent():
 		
 		return render_template("edit_consent.html",name=escape(session['username']),isearch=rows)
     return redirect(url_for('login'))
+
+
+@app.route('/edit_subtype')
+def edit_subtype():
+    # check if user is login.  
+    if 'username' in session:
+		# needs to check if user is administrator here. 
+		# open connection to projects and populate this for instant searching
+		cur = conn.cursor()
+		c = 'SELECT subtype FROM subtype';
+		cur.execute(c) 
+		rows = cur.fetchall()
+		
+		return render_template("edit_subtype.html",name=escape(session['username']),isearch=rows)
+    return redirect(url_for('login'))
+
+
+# c = 'SELECT sampletype.id, sampletype.tissue, subtype.subtype, sampletype.notes FROM sampletype INNER JOIN subtype ON sampletype.subtype_id = subtype.id LIMIT %s OFFSET %s;';
+
+@app.route('/edit_sampletype')
+def edit_sampletype():
+    # check if user is login.  
+    if 'username' in session:
+		# needs to check if user is administrator here. 
+		# open connection to projects and populate this for instant searching
+		cur = conn.cursor()
+		c = 'SELECT DISTINCT sampletype.tissue FROM sampletype';
+		cur.execute(c) 
+		rows = cur.fetchall()
+		
+		c = 'SELECT id,subtype FROM subtype';
+		cur.execute(c) 
+		rows2 = cur.fetchall()
+		
+		return render_template("edit_sampletype.html",name=escape(session['username']),isearch=rows,isearch2=rows2)
+    return redirect(url_for('login'))
+
