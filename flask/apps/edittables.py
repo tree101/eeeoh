@@ -51,3 +51,19 @@ def edit_projects():
 		rows2 = cur.fetchall()
 		return render_template("edit_projects.html",name=escape(session['username']),isearch=rows,isearch2=rows2)
     return redirect(url_for('login'))
+
+
+##### creat forms here
+@app.route('/edit_location')
+def edit_location():
+    # check if user is login.  
+    if 'username' in session:
+		# needs to check if user is administrator here. 
+		# open connection to projects and populate this for instant searching
+		cur = conn.cursor()
+		c = 'SELECT id, name, notes FROM location';
+		cur.execute(c) 
+		rows = cur.fetchall()
+		
+		return render_template("edit_locations.html",name=escape(session['username']),isearch=rows)
+    return redirect(url_for('login'))

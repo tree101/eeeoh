@@ -128,17 +128,29 @@ def table_location():
 			return render_template("error.html",error="you need to be a amdiminstrator to access this",name=escape(session['username'])   )
 		# now check if this is view only or add record then view 
 		action = int(request.args.get('action'))
+		parent_id = int(request.args.get('parent_id'))
 		# add record if action ==1 
 		# add record if action == -1
-		
+		if action == 1: 
+			parent_record = request.args.get('pname')
+			parent_id2 = parent_record.split(",")
+			nname = request.args.get('nname')
+			notes = request.args.get('notes')
+			clocation = 'INSERT INTO location (parent_id, name,notes) VALUES (%s,%s,%s);'
+			cur.execute(clocation,(parent_id2[0],nname,notes))
+			conn.commit() 
+			# see child instead
+			parent_id = int(parent_id2[0])
+			# return 
 		whatdidyoudo = 0
-		parent_id = int(request.args.get('parent_id'))
-		head = ['id','name','rows','cols','notes','delete','more']
+		
+		
+		head = ['id','parent','name','notes','delete','more']
 		if (parent_id  == 0):
-			c = 'SELECT id parent_id, name, rows, cols, notes FROM location WHERE parent_id is NULL ; ';
+			c = 'SELECT id, parent_id, name, notes FROM location WHERE parent_id is NULL ; ';
 			cur.execute(c)
 		else:
-			c = 'SELECT id parent_id, name, rows, cols, notes FROM location WHERE parent_id = %s ; ';
+			c = 'SELECT id, parent_id, name, notes FROM location WHERE parent_id = %s ; ';
 			cur.execute(c,(parent_id, )) 
 		
 		rows = cur.fetchall()
