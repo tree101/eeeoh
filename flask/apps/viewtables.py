@@ -142,7 +142,7 @@ def table_location():
 			# see child instead
 			parent_id = int(parent_id2[0])
 			# return 
-		whatdidyoudo = 0
+		whatdidyoudo = 0 # setting this to 0 is important to produce an additiona link to render children view
 		
 		
 		head = ['id','parent','name','notes','delete','more']
@@ -159,6 +159,45 @@ def table_location():
 		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo=whatdidyoudo,route='table_location',location=1, back=0)
     return redirect(url_for('login'))
     
+
+@app.route('/table_diagnosis', methods=['GET', 'POST'])
+def table_diagnosis():
+    # check if user is login.  
+    if 'username' in session:
+		# needs to check if user is administrator here. 
+		cur = conn.cursor()
+		admin = checkuser(cur, session['username'])
+		# not sure if this needs to be an admin account
+		# change back to 1 if you want admin access only 
+		if (admin == 100):
+			return render_template("error.html",error="you need to be a amdiminstrator to access this",name=escape(session['username'])   )
+		# now check if this is view only or add record then view 
+		action = int(request.args.get('action'))
+		
+		# add record if action ==1 
+		# add record if action == -1
+		if action == 1: 
+			diagnosis = request.args.get('diagnosis_name')
+			
+			notes = request.args.get('notes')
+			cdiagnosis = 'INSERT INTO diagnosis (disease,notes) VALUES (%s,%s);'
+			cur.execute(cdiagnosis,(diagnosis,notes))
+			conn.commit() 
+			 
+		whatdidyoudo = "view"
+		
+		numrowstart = int(request.args.get('numrows'))
+		numrowend = numrowstart+ 50
+		head = ['id','disease','notes','delete']
+		
+		c = 'SELECT id, disease, notes FROM diagnosis LIMIT %s OFFSET %s;';
+		cur.execute(c, (numrowend,numrowstart)) 
+		
+		rows = cur.fetchall()
+		
+
+		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo=whatdidyoudo,route='table_diagnosis')
+    return redirect(url_for('login'))
 
 
 @app.route('/table_logger', methods=['GET', 'POST'])
