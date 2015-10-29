@@ -1,5 +1,6 @@
 
-
+-- uers 
+CREATE TYPE usertype AS ENUM ('admin', 'power', 'view', 'other');
 
 DROP TABLE  IF EXISTS  projects CASCADE;
 CREATE TABLE projects(
@@ -11,8 +12,7 @@ notes TEXT
 );
 
 
--- uers 
-CREATE TYPE usertype AS ENUM ('admin', 'power', 'view', 'other');
+
 
 DROP TABLE  IF EXISTS  userlogin CASCADE;
 CREATE TABLE userLogin(
@@ -21,10 +21,10 @@ firstname VARCHAR NOT NULL,
 lastname VARCHAR NOT NULL, 
 email VARCHAR NOT NULL,
 password VARCHAR, 
-is_admin INT,
-notes TEXT, 
+is_admin INT DEFAULT 0,
+notes TEXT
 
-)
+);
 
 -- junction table here 
 DROP TABLE  IF EXISTS  userlogin_projects CASCADE;
@@ -54,7 +54,7 @@ DROP TABLE  IF EXISTS  subject_consent CASCADE;
 CREATE TABLE subject_consent(
 subject_id uuid NOT NULL REFERENCES subject(id), 
 consent_id INT NOT NULL REFERENCES consent(id),
-timestamp TIMESTAMP(2), 
+timestamp TIMESTAMP(2) DEFAULT (now() at time zone 'PST'), -- , 
 PRIMARY KEY (subject_id, consent_id),
 notes TEXT
 );
@@ -72,8 +72,9 @@ notes TEXT
 
 DROP TABLE  IF EXISTS  subject_diagnosis CASCADE;
 CREATE TABLE subject_diagnosis(
-diagnosis_id INT NOT NULL REFERENCES diagnosis(id), 
 subject_id uuid  NOT NULL REFERENCES subject(id),
+diagnosis_id INT NOT NULL REFERENCES diagnosis(id), 
+timestamp TIMESTAMP(2) DEFAULT (now() at time zone 'PST'), -- , 
 PRIMARY KEY (diagnosis_id, subject_id),
 notes TEXT
 );
@@ -87,11 +88,22 @@ id uuid NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
 users VARCHAR NOT NULL, --from current user (store in session cookie on login)
 age INT,
 sex sex NOT NULL,
-timestamp TIMESTAMP(2),
-project_id INT REFERENCES projects(id),
+date_collection date NOT NULL,
+timestamp TIMESTAMP(2) DEFAULT (now() at time zone 'PST'), -- ,
 version INT, 
 notes TEXT
 );
+
+
+DROP TABLE  IF EXISTS  subject_project CASCADE;
+CREATE TABLE subject_project(
+subject_id uuid NOT NULL REFERENCES subject(id), 
+project_id INT NOT NULL REFERENCES projects(id),
+timestamp TIMESTAMP(2) DEFAULT (now() at time zone 'PST'), -- , 
+PRIMARY KEY (subject_id, project_id),
+notes TEXT
+);
+
 
 -- sample 
 
@@ -152,7 +164,7 @@ CREATE TABLE sample(
     id uuid NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(), 
     subject_id uuid NOT NULL REFERENCES  subject(id),  
 	sampletype_id INT NOT NULL REFERENCES  sampletype(id), -- FK from type
-	timestamp TIMESTAMP(2),	
+	timestamp TIMESTAMP(2) DEFAULT (now() at time zone 'PST'), -- ,	
 	
     users INT NOT NULL, -- from cookie
     amount double precision NOT NULL, 
@@ -189,14 +201,16 @@ calling_table VARCHAR, -- name of calling table
 id uuid NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(), -- primary id of calling table
 version_number INT NOT NULL, -- script will figure this out
 users INT, -- from current user (store in cookie on login)
-timestamp TIMESTAMP(2), -- when  was this triggered
+timestamp TIMESTAMP(2) DEFAULT (now() at time zone 'PST'), -- when  was this triggered
 data_log JSON, -- stores only what was changed 
 notes TEXT
 );
 DROP TABLE  IF EXISTS  logger;
 CREATE TABLE logger(
 id SERIAL PRIMARY KEY,
-timestamp TIMESTAMP(2), -- when  was this triggered
+tablename VARCHAR,
+username VARCHAR,
+timestamp TIMESTAMP(2) DEFAULT (now() at time zone 'PST'), -- when  was this triggered
 lognotes TEXT
 );
 

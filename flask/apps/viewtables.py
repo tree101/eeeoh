@@ -22,6 +22,7 @@ from flask.ext.login import LoginManager
 import json
 import re
 from datetime import datetime
+import uuid
 ##################### my own rollups
 from get import *
 
@@ -375,6 +376,69 @@ def table_sampletype():
 		
 		rows = cur.fetchall()
 		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo=whatdidyoudo,route='table_sampletype')
+    return redirect(url_for('login'))
+
+
+@app.route('/table_subject', methods=['GET', 'POST'])
+def table_subject():
+    # check if user is login.  
+    if 'username' in session:
+		# needs to check if user here 
+		cur = conn.cursor()
+		# now check if this is view only or add record then view 
+		action = int(request.args.get('action'))
+		whatdidyoudo = 0 # important to set to 0 otherwise it will log this activity
+		# add record if action ==1 
+		# add record if action == -1
+		if action == 1: 
+			age = request.args.get('age')
+			sex = request.args.get('sex')
+			consent = request.args.get('consent_name')
+			diagnosis = request.args.get('diagnosis_name')
+			project = request.args.get('project_name')
+			datec = request.args.get('datec')
+			notes = request.args.get('notes')
+			
+			# create uuid for user here
+			uuidg =  str(uuid.uuid1());
+			
+			
+			insert_subject = 'INSERT INTO subject (id, users,age,sex,date_collection,timestamp,notes) VALUES (%s,%s,%s,%s,%s,DEFAULT,%s);'
+			insert_project = 'INSERT INTO subject_project (subject_id,project_id,timestamp,notes) VALUES (%s,%s,DEFAULT,%s);'
+			insert_consent = 'INSERT INTO subject_consent (subject_id,consent_id,timestamp,notes) VALUES (%s,%s,DEFAULT,%s);'
+			insert_diagnosis = 'INSERT INTO subject_diagnosis (subject_id,diagnosis_id,timestamp,notes) VALUES (%s,%s,DEFAULT,%s);'
+			cur.execute('BEGIN WORK;')
+			cur.execute(insert_subject,(uuidg,session['username'],age,sex,datec,notes))
+			cur.execute(insert_project,(uuidg,project,notes))
+			cur.execute(insert_consent,(uuidg,consent,notes))
+			cur.execute(insert_diagnosis,(uuidg,diagnosis,notes))
+			cur.execute('COMMIT WORK;')
+			conn.commit()
+			whatdidyoudo = "%s inserted a new record id: %s age: %s sex: %s consent: %s diagnosis: %s project: %s datec: %s notes: notes" % ( session['username'], uuidg, age, sex, consent, diagnosis, project, datec)
+			
+			#whatdidyoudo = insert_subject
+		if action == -1:
+			id = request.args.get('id')
+			delete_this = 'DELETE FROM sampletype WHERE id = %s;';
+			cur.execute(delete_this, (id,)) 
+			#conn.commit()
+			whatdidyoudo = "%s just deleted id %s from table sampletype " % (session['username'],id)
+			 
+		# now that all the action is completed - lets store it into the logger
+		if action != 0:  
+			logc = 'INSERT INTO logger (tablename, username,timestamp,lognotes) VALUES (\'sampletype\',%s,DEFAULT,%s);'
+			#cur.execute(logc, (session['username'],whatdidyoudo)) 
+			#conn.commit()
+		
+		numrowstart = int(request.args.get('numrows'))
+		numrowend = numrowstart+ 50
+		head = ['id','user','age','sex','date_collection','time_entered','notes']
+		c= 'SELECT id, user, age, sex, date_collection,timestamp,notes FROM subject'
+		#c = 'SELECT sampletype.id, sampletype.tissue, subtype.subtype, sampletype.notes FROM sampletype INNER JOIN subtype ON sampletype.subtype_id = subtype.id LIMIT %s OFFSET %s;';
+		cur.execute(c, (numrowend,numrowstart)) 
+		
+		rows = cur.fetchall()
+		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo=whatdidyoudo,route='table_subject')
     return redirect(url_for('login'))
 
 

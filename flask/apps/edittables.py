@@ -133,3 +133,25 @@ def edit_sampletype():
 		return render_template("edit_sampletype.html",name=escape(session['username']),isearch=rows,isearch2=rows2)
     return redirect(url_for('login'))
 
+@app.route('/edit_subject')
+def edit_subject():
+    # check if user is login.  
+    if 'username' in session:
+		# needs to check if user is administrator here. 
+		# open connection to projects and populate this for instant searching
+		cur = conn.cursor()
+		# get consents 
+		c = 'SELECT id, form FROM consent';
+		cur.execute(c) 
+		crows = cur.fetchall()
+		# get projects
+		c = 'SELECT id, name FROM projects';
+		cur.execute(c) 
+		prows = cur.fetchall()
+		# get 
+		c = 'SELECT id, disease FROM diagnosis';
+		cur.execute(c) 
+		drows = cur.fetchall()
+		
+		return render_template("edit_subject.html",name=escape(session['username']),consentSearch=crows,projectSearch=prows,diagnosisSearch=drows)
+    return redirect(url_for('login'))
