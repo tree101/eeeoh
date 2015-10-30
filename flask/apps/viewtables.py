@@ -433,11 +433,28 @@ def table_subject():
 		numrowstart = int(request.args.get('numrows'))
 		numrowend = numrowstart+ 50
 		head = ['id','user','age','sex','date_collection','time_entered','notes']
-		c= 'SELECT id, user, age, sex, date_collection,timestamp,notes FROM subject'
-		#c = 'SELECT sampletype.id, sampletype.tissue, subtype.subtype, sampletype.notes FROM sampletype INNER JOIN subtype ON sampletype.subtype_id = subtype.id LIMIT %s OFFSET %s;';
-		cur.execute(c, (numrowend,numrowstart)) 
-		
+		# firs thing is to get all the subject id from here
+		getid = 'SELECT id, users, age, sex, date_collection, timestamp, notes FROM subject LIMIT %s OFFSET %s;'
+		cur.execute(getid, (numrowend,numrowstart))
 		rows = cur.fetchall()
+		# now loop through each id and get from three tables: projects, consent, diagnosis, 
+		for sID in rows:
+			tempid = sID[0] 
+			mconsent = ('SELECT consent.form, consent.notes FROM subject'
+				 'INNER JOIN subject_consent '
+				         'ON subject_consent.subject_id = subject.id '
+				         'AND subject_consent.subject_id = %s'
+				         ' INNER JOIN consent'
+				         ' ON consent.id = subject_consent.consent_id'
+			)
+			mprojects = ('SELECT projects.name, projects.groupname, projects.notes FROM subject'
+				 'INNER JOIN subject_project '
+				         'ON subject_project.subject_id = subject.id '
+				         'AND subject_project.subject_id = %s'
+				         ' INNER JOIN projects'
+				         ' ON projects.id = subject_consent.consent_id'
+			)
+		
 		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo=whatdidyoudo,route='table_subject')
     return redirect(url_for('login'))
 
