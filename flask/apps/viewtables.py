@@ -385,38 +385,50 @@ def table_subject():
     if 'username' in session:
 		# needs to check if user here 
 		cur = conn.cursor()
-		# now check if this is view only or add record then view 
-		action = int(request.args.get('action'))
+		# now check if this is view only or add record then view
+		if request.method == 'POST':
+			action = int(request.form['action'])
+			numrowstart = int(request.form['numrows'])
+		else:
+			action =      int(request.args.get('action'))
+			numrowstart = int(request.args.get('numrows'))
+		numrowend = numrowstart+ 50
 		whatdidyoudo = 0 # important to set to 0 otherwise it will log this activity
 		# add record if action ==1 
 		# add record if action == -1
 		if action == 1: 
-			age = request.args.get('age')
-			sex = request.args.get('sex')
-			consent = request.args.get('consent_name')
-			diagnosis = request.args.get('diagnosis_name')
-			project = request.args.get('project_name')
-			datec = request.args.get('datec')
-			notes = request.args.get('notes')
+			age = request.form['age'] #request.form
+			sex = request.form['sex']
+			consent = request.form.getlist('consent_name')
+			diagnosis = request.form.getlist('diagnosis_name')
+			project =   request.form.getlist('project_name')
+			datec = request.form['datec']
+			notes = request.form['notes']
+			
+			
+			
 			
 			# create uuid for user here
 			uuidg =  str(uuid.uuid1());
-			
-			
-			insert_subject = 'INSERT INTO subject (id, users,age,sex,date_collection,timestamp,notes) VALUES (%s,%s,%s,%s,%s,DEFAULT,%s);'
-			insert_project = 'INSERT INTO subject_project (subject_id,project_id,timestamp,notes) VALUES (%s,%s,DEFAULT,%s);'
-			insert_consent = 'INSERT INTO subject_consent (subject_id,consent_id,timestamp,notes) VALUES (%s,%s,DEFAULT,%s);'
-			insert_diagnosis = 'INSERT INTO subject_diagnosis (subject_id,diagnosis_id,timestamp,notes) VALUES (%s,%s,DEFAULT,%s);'
 			cur.execute('BEGIN WORK;')
+			insert_subject = 'INSERT INTO subject (id, users,age,sex,date_collection,timestamp,notes) VALUES (%s,%s,%s,%s,%s,DEFAULT,%s);'
 			cur.execute(insert_subject,(uuidg,session['username'],age,sex,datec,notes))
-			cur.execute(insert_project,(uuidg,project,notes))
-			cur.execute(insert_consent,(uuidg,consent,notes))
-			cur.execute(insert_diagnosis,(uuidg,diagnosis,notes))
+			
+			for c in consent:
+				insert_consent = 'INSERT INTO subject_consent (subject_id,consent_id,timestamp) VALUES (%s,%s,DEFAULT);'
+				cur.execute(insert_consent,(uuidg,c))
+			for p in project:
+				insert_project = 'INSERT INTO subject_project (subject_id,project_id,timestamp) VALUES (%s,%s,DEFAULT);'
+				cur.execute(insert_project,(uuidg,p))
+			for d in diagnosis:
+				insert_diagnosis = 'INSERT INTO subject_diagnosis (subject_id,diagnosis_id,timestamp) VALUES (%s,%s,DEFAULT);'
+				cur.execute(insert_diagnosis,(uuidg,d))
+				
+			
 			cur.execute('COMMIT WORK;')
 			conn.commit()
-			whatdidyoudo = "%s inserted a new record id: %s age: %s sex: %s consent: %s diagnosis: %s project: %s datec: %s notes: notes" % ( session['username'], uuidg, age, sex, consent, diagnosis, project, datec)
+			whatdidyoudo = "%s inserted a new record. id: %s age: %s sex: %s consent: %s diagnosis: %s project: %s datec: %s notes: %s" % ( session['username'], uuidg, age, sex, consent, diagnosis, project, datec, notes)
 			
-			#whatdidyoudo = insert_subject
 		if action == -1:
 			id = request.args.get('id')
 			delete_this = 'DELETE FROM sampletype WHERE id = %s;';
@@ -426,36 +438,61 @@ def table_subject():
 			 
 		# now that all the action is completed - lets store it into the logger
 		if action != 0:  
-			logc = 'INSERT INTO logger (tablename, username,timestamp,lognotes) VALUES (\'sampletype\',%s,DEFAULT,%s);'
-			#cur.execute(logc, (session['username'],whatdidyoudo)) 
-			#conn.commit()
+			logc = 'INSERT INTO logger (tablename, username,timestamp,lognotes) VALUES (\'subject\',%s,DEFAULT,%s);'
+			cur.execute(logc, (session['username'],whatdidyoudo)) 
+			conn.commit()
 		
-		numrowstart = int(request.args.get('numrows'))
-		numrowend = numrowstart+ 50
+		
 		head = ['id','user','age','sex','date_collection','time_entered','notes']
 		# firs thing is to get all the subject id from here
 		getid = 'SELECT id, users, age, sex, date_collection, timestamp, notes FROM subject LIMIT %s OFFSET %s;'
 		cur.execute(getid, (numrowend,numrowstart))
 		rows = cur.fetchall()
-		# now loop through each id and get from three tables: projects, consent, diagnosis, 
+		# now loop through each id and get from three tables: projects, consent, diagnosis,
+		final =[]
 		for sID in rows:
-			tempid = sID[0] 
-			mconsent = ('SELECT consent.form, consent.notes FROM subject'
-				 'INNER JOIN subject_consent '
+			pre =[]
+			pre.append(sID)
+			tempid = sID[0]
+			
+			mconsent = ('SELECT consent.form, consent.notes FROM subject '
+				        'INNER JOIN subject_consent '
 				         'ON subject_consent.subject_id = subject.id '
-				         'AND subject_consent.subject_id = %s'
+				         'AND subject_consent.subject_id = %s '
 				         ' INNER JOIN consent'
 				         ' ON consent.id = subject_consent.consent_id'
 			)
-			mprojects = ('SELECT projects.name, projects.groupname, projects.notes FROM subject'
-				 'INNER JOIN subject_project '
-				         'ON subject_project.subject_id = subject.id '
-				         'AND subject_project.subject_id = %s'
-				         ' INNER JOIN projects'
-				         ' ON projects.id = subject_consent.consent_id'
+			
+			cur.execute(mconsent, (tempid,))
+			crows = cur.fetchall()
+			pre.append(crows)
+			
+			mprojects = ('SELECT projects.name, projects.groupname, projects.notes FROM subject '
+							'INNER JOIN subject_project ' 
+							'ON subject_project.subject_id = subject.id ' 
+							'AND subject_project.subject_id = %s '
+				            'INNER JOIN projects '
+				            'ON projects.id = subject_project.project_id'
 			)
-		
-		return render_template("table_view.html",data=rows,name=escape(session['username']),headinfo= head, whatdidyoudo=whatdidyoudo,route='table_subject')
+
+			cur.execute(mprojects, (tempid,))
+			prows = cur.fetchall()
+			pre.append(prows)
+			
+			mdiagnosis = ('SELECT diagnosis.disease, diagnosis.notes FROM subject '
+				             'INNER JOIN subject_diagnosis ' 
+				             'ON subject_diagnosis.subject_id = subject.id ' 
+				             'AND subject_diagnosis.subject_id = %s '
+				             'INNER JOIN diagnosis '
+				             'ON diagnosis.id = subject_diagnosis.diagnosis_id '
+			)
+			
+			cur.execute(mdiagnosis, (tempid,))
+			drows = cur.fetchall()
+			pre.append(drows)
+			# append [ [ subject info], [consent], [projects], [diagnosis]
+			final.append(pre)
+		return render_template("table_view_subject.html",final=final,name=escape(session['username']),headinfo= head, whatdidyoudo=whatdidyoudo,route='table_subject')
     return redirect(url_for('login'))
 
 

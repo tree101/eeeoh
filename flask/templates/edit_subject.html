@@ -57,6 +57,14 @@ $('#subject-form').validate({
 
 
   });
+
+
+$('#project_name').change(function(e){
+        var values = $('#project_table').val()
+        alert(values);
+    });
+
+
  
  
  
@@ -79,7 +87,7 @@ $('#subject-form').validate({
 						<br>
                      
                      
-				<form role="form" id="subject-form" action = "/table_subject" class="form-horizontal">
+				<form role="form" id="subject-form" action = "/table_subject" class="form-horizontal" method="post">
 				  
 										  <div class="form-group">
 								  <label class="control-label col-lg-3" for="age">Enter Age </label>
@@ -152,13 +160,17 @@ $('#subject-form').validate({
 
 						</div>
 
-                        
+                        <div class="form-group">
+				  <label for="notes" class="control-label col-lg-3"> Notes:</label>
+				  <div class="col-lg-9">
+				  <textarea class="form-control" rows="5" id="notes"  name="notes" placeholder="additional notes?" ></textarea>
+				</div></div>
 
 				 
 				 
 				 
-				 <input type="hidden" name="action" value=1>
-				 <input type = "hidden" name = "numrows" value=0>
+				 <input type="hidden" id ="action" name="action" value=1>
+				 <input type = "hidden" name = "numrows" id="numrows" value=0>
 				  <button type="submit" class="btn btn-default">Submit</button>
 				  
 				  
