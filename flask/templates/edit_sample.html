@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+
+{% if name %}
+
+
+
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+<br>
+
+  <div><span class="generalHi">You are logged in as: {{ name }} </span> 
+  ::  <span><a href='./logout'> logout now </a></span>
+  </div>
+
+<br>
+
+<form role="form" id="subject-form" action = "/table_subject" class="form-horizontal" method="post">
+
+
+
+<!-- first row select where the sample is coming from  -->
+<div class="row">
+
+	<div class="col-lg-1" >  </div>
+
+		<div class="col-lg-4" >
+			<label for="what1">Please Select subject ID </label>
+		</div>
+
+		<div class="col-lg-4" >
+	   
+				<input type="text" class="form-control" id="what1" name = "what1" placeholder="Enter ID">
+			
+
+		 </div>
+
+
+		
+		
+
+		
+</div>
+<!-- first row select where the sample is coming from  -->
+
+
+<br>
+
+	
+<div class="row" id="hide1" name="hide1">
+
+	<div class="col-lg-1" >  </div>
+
+		<div class="col-lg-2" >
+			<label for="hide1_l">Please a sample </label>
+		</div>
+
+		<div class="col-lg-9" id="hide1_no" name="hide1_no">
+	   
+		  
+			 <select class="form-control" id="id" name = "id" >
+			 <div id="hide1_o" name ="hide1_o">     
+			 
+				</div>
+			 </select>
+
+		 </div>
+
+		
+</div>
+
+<!-- end 2nd row this is to display ids-->
+
+<br>
+
+
+
+
+
+<!-- details for specifics -->
+
+<div name="hide2" id="hide2">
+
+<!-- row 1 sample types -->
+<div class="row">
+		<div class="col-lg-1" >  </div>
+		
+		<div class="col-lg-2" >
+		<label for="sample">Sample Type</label>
+		</div>
+
+		<div class="col-lg-3" >  
+			 <select class="form-control" id="sample" name = "sample" >
+				{% for tags in sampletype %}
+			   <option value="{{tags[0]}}"> {{tags[1]}} </option>
+			  {% endfor %}
+
+			 
+			 </select>
+		</div>
+
+		<div class="col-lg-2" >
+		<label for="sampletype"> Sample subtype </label>
+		</div>
+
+		<div class="col-lg-3" >  
+			 <select class="form-control" id="sampletype" name = "sampletype" >
+			  {% for tags in subtype %}
+			   <option value="{{tags[0]}}"> {{tags[1]}} </option>
+			  {% endfor %}  
+			 </select>
+		</div>
+<div class="col-lg-1" >  </div>
+
+<!-- end row 1 samples details -->
+</div>
+
+<br>
+<!-- row 2 location location location -->
+<div class="row">
+		<div class="col-lg-1" >  </div>
+		
+		<div class="col-lg-1" >
+		<label for="sample">Location</label>
+		</div>
+
+		<div class="col-lg-10" >  
+			 <select class="form-control" id="location" name = "location" >
+			 {% for tags in location %}
+			   <option value="{{tags[0]}}"> {{tags}} </option>
+			  {% endfor %}
+			 </select>
+		</div>
+
+
+<!-- end row 2 locations -->
+</div>
+
+
+<!-- end hide 2 details -->
+</div>
+
+
+
+ </form>
+ <script>
+
+// autofill
+
+$(function() {
+	  
+	  
+    var nameTags = [
+      
+      {% for tags in IDs %}
+         "{{tags[0]}},age {{tags[1]}},sex {{tags[2]}},date {{tags[3]}}",      
+      {% endfor %}
+      
+    ];
+    
+     
+    $( "#what1" ).autocomplete({
+      source: nameTags
+    });
+    
+
+   
+
+
+  });
+    
+
+  
+ // see what they want first, new or exisiting
+
+$('#hide1').hide();
+
+
+ $('#what1').bind('blur', function() {
+		var thistable = 
+        $.getJSON('/edit_sample2', {
+          xtable: $( "#what1" ).val(),
+          
+		  ajDothis: 1
+        }, function(data) {
+				
+				var txt = "";
+			
+					
+				if (data.result == 0){
+					//id="hide1_no"
+					txt= "there are no samples associated with this subject " + data.result;
+					$("#hide1_no").html(txt);
+					$('#hide1').show();
+				}
+				else{
+				for (var x in data.result) {
+				txt += "<option value =" + data.result[x][0] +">" + data.result[x][0] + ",age " + data.result[x][1] + ",sex " + data.result[x][2] + ",date " + data.result[x][3]+ "</option>"	
+				
+				}
+				courseStr = console.table(data.result);
+			
+				$("#id").html(txt);
+				$('#hide1').show();
+			}
+        });
+        return false;
+      });
+
+
+ 
+ 
+ 
+  </script>
+
+
+
+ 
+  {% else %}
+  <h1>You need to login or create an account dude</h1>
+  <a href='./login'> login here </a>
+{% endif %}
+
+
+
+ 
+   
+{% endblock %}

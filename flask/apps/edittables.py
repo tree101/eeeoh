@@ -126,11 +126,8 @@ def edit_sampletype():
 		cur.execute(c) 
 		rows = cur.fetchall()
 		
-		c = 'SELECT id,subtype FROM subtype';
-		cur.execute(c) 
-		rows2 = cur.fetchall()
 		
-		return render_template("edit_sampletype.html",name=escape(session['username']),isearch=rows,isearch2=rows2)
+		return render_template("edit_sampletype.html",name=escape(session['username']),isearch=rows)
     return redirect(url_for('login'))
 
 @app.route('/edit_subject')
@@ -154,4 +151,71 @@ def edit_subject():
 		drows = cur.fetchall()
 		
 		return render_template("edit_subject.html",name=escape(session['username']),consentSearch=crows,projectSearch=prows,diagnosisSearch=drows)
+    return redirect(url_for('login'))
+
+
+
+@app.route('/edit_sample')
+def edit_sample():
+    # check if user is login.  
+    if 'username' in session:
+		cur = conn.cursor()
+		# needs to check if user is administrator here. 
+		# open connection to projects and populate this for instant searching
+		ajDothis = request.args.get('ajDothis', type=int)
+		# do the ajax first 
+		# lets get uuid for all subject and samples
+		if ajDothis == 0:
+			c = 'SELECT id, age, sex, COALESCE(to_char(date_collection, \'MM-DD-YYYY\'), \'\') AS date_collection FROM subject';
+			cur.execute(c) 
+			srows = cur.fetchall()
+			# now get sample type
+			csampletype= 'SELECT id, tissue FROM sampletype';
+			cur.execute(csampletype)
+			strows = cur.fetchall()
+			# get subtypes
+			csubtype= 'SELECT id, subtype FROM subtype';
+			cur.execute(csubtype)
+			subrows = cur.fetchall()
+			# get list of locations
+			# first get mother nodes, usually institutions but you never ever know, hee hee
+			lc = 'SELECT id, name FROM location WHERE parent_id IS NULL;'
+			cur.execute(lc)
+			lcrows = cur.fetchall()
+			
+			location=getChild_location(cur,lcrows,[])
+			
+			return render_template("edit_sample.html",name=escape(session['username']), IDs=srows, sampletype=strows, subtype=subrows, location=location )
+		
+		
+		
+		
+		
+    return redirect(url_for('login'))
+
+
+
+
+@app.route('/edit_sample2')
+def edit_sample2():
+    # check if user is login.  
+    if 'username' in session:
+		cur = conn.cursor()
+		# needs to check if user is administrator here. 
+		# open connection to projects and populate this for instant searching
+		ajDothis = request.args.get('ajDothis', type=int)
+		if (ajDothis ==1):
+			xtable = request.args.get('xtable')
+			id = xtable.split(",")
+			c = 'SELECT * from sample where subject_id = %s';
+			cur.execute(c, (id[0],)) 
+			srows = cur.fetchall()
+			if not srows:
+				srows = 0
+			
+		return jsonify(result=srows)
+		
+		
+		
+		
     return redirect(url_for('login'))

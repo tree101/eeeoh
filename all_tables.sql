@@ -124,7 +124,7 @@ notes TEXT
 CREATE TABLE sampletype(
 id SERIAL PRIMARY KEY, 
 tissue VARCHAR NOT NULL, -- tissue, molecular, etc
-subtype_id INT NOT NULL REFERENCES  subtype(id), -- 
+
 notes TEXT
 );	
 

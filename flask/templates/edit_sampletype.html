@@ -73,23 +73,7 @@ $('#sampletype-form').validate({
 					<input type="text" class="form-control" id="sampletype_name" name="sampletype_name"  placeholder="Type of tissue">
 				  </div>
 				  
-				  <div class="form-group">
-					<label for="subtype_name">Subtypes: if you don't see your subtype here make sure to insert a new one</label>
-					
-					<select class="form-control" id="subtype_name" name = "subtype_name">
-									     {% for tags in isearch2 %}
-									     
-									     <option value="{{tags[0]}}"> {{tags[1]}} </option>
-	
-										  {% endfor %}
-										
-									
-									  </select>
-									  <br>
-					
-					
-					
-				  </div>
+
 				  
 				
 				 <div class="form-group">
