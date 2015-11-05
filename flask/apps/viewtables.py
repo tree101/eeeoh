@@ -349,9 +349,10 @@ def table_sampletype():
 		if action == 1: 
 			
 			sampletype = request.args.get('sampletype_name')
+			cat = request.args.get('cat')
 			notes = request.args.get('notes')
-			csubtype = 'INSERT INTO sampletype (tissue,notes) VALUES (%s,%s);'
-			cur.execute(csubtype,(sampletype,notes))
+			csubtype = 'INSERT INTO sampletype (tissue,cat,notes) VALUES (%s,%s,%s);'
+			cur.execute(csubtype,(sampletype,cat,notes))
 			conn.commit()
 			whatdidyoudo = "%s Inserted a new record into sampletype:  %s  notes: %s" % (session['username'], sampletype,notes ) 
 		if action == -1:
@@ -369,9 +370,9 @@ def table_sampletype():
 		
 		numrowstart = int(request.args.get('numrows'))
 		numrowend = numrowstart+ 50
-		head = ['id','Tissue type','notes','delete']
+		head = ['id','Sample type','Sample Category','notes','delete']
 		
-		c = 'SELECT sampletype.id, sampletype.tissue, sampletype.notes FROM sampletype LIMIT %s OFFSET %s;';
+		c = 'SELECT sampletype.id, sampletype.tissue, sampletype.cat, sampletype.notes FROM sampletype LIMIT %s OFFSET %s;';
 		cur.execute(c, (numrowend,numrowstart)) 
 		
 		rows = cur.fetchall()

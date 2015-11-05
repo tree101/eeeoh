@@ -124,7 +124,7 @@ notes TEXT
 CREATE TABLE sampletype(
 id SERIAL PRIMARY KEY, 
 tissue VARCHAR NOT NULL, -- tissue, molecular, etc
-
+cat VARCHAR NOT NULL, -- data, library_prep, tissue, 
 notes TEXT
 );	
 
@@ -161,25 +161,23 @@ PRIMARY KEY(location_id, project_id)
 
 DROP TABLE  IF EXISTS  sample CASCADE;
 CREATE TABLE sample(
+
     id uuid NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(), 
     subject_id uuid NOT NULL REFERENCES  subject(id),  
 	sampletype_id INT NOT NULL REFERENCES  sampletype(id), -- FK from type
+	subtype_id INT REFERENCES  sampletype(id), -- FK from type
 	timestamp TIMESTAMP(2) DEFAULT (now() at time zone 'PST'), -- ,	
+	date_collection date, 
 	
-    users INT NOT NULL, -- from cookie
-    amount double precision NOT NULL, 
-	
-	unit_id INT REFERENCES  unit(id), 
-	
-	location_id INT NOT NULL REFERENCES  location(id), 
-    
+    users VARCHAR NOT NULL, -- from cookie 
+	location_id INT REFERENCES  location(id), 
 
-	label VARCHAR NOT NULL, -- this is still to be decided contingent on what labeling machine we need
-
+	label VARCHAR, -- this is still to be decided contingent on what labeling machine we need
 
 	parent uuid REFERENCES sample(id),
 	
-    notes TEXT	
+    notes TEXT,
+    meta JSON 
 
 	);
 

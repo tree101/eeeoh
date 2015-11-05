@@ -18,7 +18,7 @@
 
 <br>
 
-<form role="form" id="subject-form" action = "/table_subject" class="form-horizontal" method="post">
+<form role="form" id="subject-form" name = "subject-form" class="form-horizontal" method="post" enctype="multipart/form-data" action="javascript:void();">
 
 
 
@@ -27,20 +27,16 @@
 
 	<div class="col-lg-1" >  </div>
 
-		<div class="col-lg-4" >
-			<label for="what1">Please Select subject ID </label>
+		<div class="col-lg-2" ><label for="what1">Please Select subject ID </label></div>
+
+		<div class="col-lg-5" >
+	    <input type="text" class="form-control" id="what1" name = "what1" placeholder="Enter ID">
 		</div>
 
-		<div class="col-lg-4" >
-	   
-				<input type="text" class="form-control" id="what1" name = "what1" placeholder="Enter ID">
-			
 
-		 </div>
-
-
-		
-		
+		<div class="col-lg-1" ><label for="datec">Date Collection </label></div>
+		<div class="col-lg-2"><input type="text" id="datec" name="datec"></div>
+		<div class="col-lg-1" >  </div>
 
 		
 </div>
@@ -55,15 +51,15 @@
 	<div class="col-lg-1" >  </div>
 
 		<div class="col-lg-2" >
-			<label for="hide1_l">Please a sample </label>
+			<label for="hide1_l">Select sample </label>
 		</div>
 
 		<div class="col-lg-9" id="hide1_no" name="hide1_no">
 	   
 		  
-			 <select class="form-control" id="id" name = "id" >
+			 <select class="form-control" id="sample_id" name = "sample_id" >
 			 <div id="hide1_o" name ="hide1_o">     
-			 
+					<option value="none"></option>
 				</div>
 			 </select>
 
@@ -94,8 +90,9 @@
 
 		<div class="col-lg-3" >  
 			 <select class="form-control" id="sample" name = "sample" >
+				 <option value="-1" selected></option>
 				{% for tags in sampletype %}
-			   <option value="{{tags[0]}}"> {{tags[1]}} </option>
+			   <option value="{{tags[0]}}"> {{tags[2]}}: {{tags[1]}} </option>
 			  {% endfor %}
 
 			 
@@ -108,6 +105,7 @@
 
 		<div class="col-lg-3" >  
 			 <select class="form-control" id="sampletype" name = "sampletype" >
+			  <option value="-1" selected></option>
 			  {% for tags in subtype %}
 			   <option value="{{tags[0]}}"> {{tags[1]}} </option>
 			  {% endfor %}  
@@ -120,6 +118,9 @@
 
 <br>
 <!-- row 2 location location location -->
+
+<!-- got rid of location dropdown bar-->
+<!--
 <div class="row">
 		<div class="col-lg-1" >  </div>
 		
@@ -127,22 +128,122 @@
 		<label for="sample">Location</label>
 		</div>
 
-		<div class="col-lg-10" >  
+		<div class="col-lg-10" >
+			
 			 <select class="form-control" id="location" name = "location" >
-			 {% for tags in location %}
+				 <option value="-1" selected></option>
+			 {% for tags in location[0] %}
 			   <option value="{{tags[0]}}"> {{tags}} </option>
 			  {% endfor %}
 			 </select>
+		</div></div>
+<!-- end -->
+
+<!-- end row 2 locations -->
+
+
+<br>
+<!-- row 3 location location search bar -->
+<div class="row">
+		<div class="col-lg-1" >  </div>
+		
+		<div class="col-lg-1" ><label for="sample">Location Search</label></div>
+		<div class="col-lg-8" >
+		<input type="text" class="form-control" id="whatlocation" name = "whatlocation" placeholder="where did you store this?">
+		</div>
+
+		<div class="col-lg-1" ><label for="sample">ADD</label></div>
+		<div class="col-lg-1" >
+		<input type="text" class="form-control" id="addloc" name = "addloc">
 		</div>
 
 
-<!-- end row 2 locations -->
+<!-- end row 3 locations -->
 </div>
 
 
 <!-- end hide 2 details -->
 </div>
 
+<!-- meta fields starts here -->
+
+<div id=tissue name="tissue">
+<hr style="border-color:#820000">
+
+<div class="form-group">
+	<div class="col-lg-1" >  </div>
+
+	<label for="weight" class="col-lg-1">Weight or Volume</label>
+	<div class="col-lg-2"> <input type="text" id="weight" name="weight" onkeypress='return event.charCode >= 48 && event.charCode <= 57 || event.charCode ==46'></div>
+
+	<div class="col-lg-2">
+		
+			 <select class="form-control" id="tissue_unit" name = "tissue_unit" >
+			 {% for tags in unit %}
+			   <option value="{{tags[0]}}"> {{tags[0]}} </option>
+			  {% endfor %}
+			 </select>
+	</div>
+
+	<label class="col-lg-1" for="accession">Acession#</label>
+	<div class="col-lg-2"> <input type="text" id="accession" name="accession"></div>
+
+	<label class="col-lg-1" for="percent_tumor">% Tumor </label>
+	<div class="col-lg-2"> <input type="text" id="percent_tumor" name="percent_tumor" onkeypress='return event.charCode >= 48 && event.charCode <= 57 || event.charCode ==46'></div>
+
+	
+	
+</div>
+
+
+
+<div class="form-group">
+	<div class="col-lg-1" >  </div>
+	
+	<label for="state" class="col-lg-1">State</label>
+	<div class="col-lg-2">
+			<select class="form-control" id="state" name="stage">
+				<option value="Fresh Frozen">Fresh Frozen</option>
+				<option value="FFPE">FFPE</option>
+			
+			 </select>
+
+	</div>
+
+	<label for="stage" class="col-lg-1">Stage</label>
+	<div class="col-lg-2">
+			<select class="form-control" id="stage" name="stage">
+				<option value="biopsy">biopsy</option>
+				<option value="metastasize">metastasize</option>
+				<option value="normal">normal</option>
+				<option value="primar">primary</option>
+				<option value="recurrent/residual">recurrent/residual</option>
+			 </select>
+	</div>
+
+	<label for="upload" class="col-lg-1">Upload</label>
+	<div class="col-lg-2"> <input type="file" id="file" name="file" class="file"></div>
+	
+<div class="col-lg-2"></div>
+</div>
+
+
+</div>
+<!-- end tissue -->
+<!-- insert button -->
+
+<br><br>
+<hr style="border-color:#820000">
+<div class="form-group">
+	<div class="col-lg-1" >  </div>
+	<div class="col-lg-2">
+	<button type="submit"id="insert"name="insert" class="btn btn-default">Insert</button>
+	</div>
+	<div class="col-lg-9" >  <input type="hidden" id="meta" name="meta" value="0">
+<input type="hidden" id="meta2" name="meta2" value="0"></div>
+	
+</div>
+<!-- END insert button -->
 
 
  </form>
@@ -160,14 +261,28 @@ $(function() {
       {% endfor %}
       
     ];
-    
-     
+
     $( "#what1" ).autocomplete({
       source: nameTags
     });
     
+// end autofill what1 which is for ids
+// start autofill location      
 
-   
+    
+	var locationTags = [
+      
+      {% for tags in location[0] %}
+         "{{tags[0]}},{{ tags|join(',') }}",      
+      {% endfor %}
+      
+    ];
+
+    $( "#whatlocation" ).autocomplete({
+      source: locationTags
+    });
+
+// end autofill locations    
 
 
   });
@@ -175,9 +290,9 @@ $(function() {
 
   
  // see what they want first, new or exisiting
-
+$('#datec').datepicker();
 $('#hide1').hide();
-
+$("#tissue").hide();
 
  $('#what1').bind('blur', function() {
 		var thistable = 
@@ -203,7 +318,7 @@ $('#hide1').hide();
 				}
 				courseStr = console.table(data.result);
 			
-				$("#id").html(txt);
+				//$("#id").html(txt);
 				$('#hide1').show();
 			}
         });
@@ -211,7 +326,70 @@ $('#hide1').hide();
       });
 
 
- 
+
+
+ $('#sample').bind('change', function() {
+		
+		// var s = $( "#sample" ).val()
+		// get text instead of value 
+		var s = document.getElementById("sample").options[document.getElementById("sample").selectedIndex ].text
+		
+		if(/Tissue/.test(s)){
+			$("#tissue").show();
+			document.getElementById('meta').value = 1; 
+		}
+		else{
+			$("#tissue").hide();
+			document.getElementById('meta').value = 0; 
+		} 
+        return false;
+      });
+
+
+  $('#insert').bind('click', function() {
+	 meta = document.getElementById('meta').value
+	 
+	// meta 1 is for tissue 
+     if (meta==1){
+				
+					var thistable = 
+					$.getJSON('/edit_sample2', {
+					  subject: $( "#what1" ).val(),
+					  sample:  $( "#sample" ).val() ,
+					  datec:  $( "#datec" ).val(),
+					  sample_type:  $( "#sample_type" ).val(),
+					  location:  $( "#whatlocation" ).val(),
+					  location:  $( "#addloc" ).val(),
+					  weight:  $( "#weight" ).val(),
+					  tissue_unit:  $( "#tissue_unit" ).val(),
+					  accession:  $( "#accession" ).val(),
+					  percent_tumor:  $( "#percent_tumor" ).val(),
+					  state:          $( "#state" ).val(),
+					  stage:          $( "#stage" ).val(),
+					  ajDothis: 2
+					},
+
+					function(data) {
+							
+							var txt = "";
+						
+								
+							
+							courseStr = console.table(data.result);
+						
+							$("#hide1_no").html(data.result);
+							$('#hide1').show();
+				});	
+
+        }
+
+
+
+	//alert(sample_id);
+
+return false; 
+
+ });
  
  
   </script>

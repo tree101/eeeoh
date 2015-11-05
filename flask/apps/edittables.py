@@ -160,6 +160,7 @@ def edit_sample():
     # check if user is login.  
     if 'username' in session:
 		cur = conn.cursor()
+		
 		# needs to check if user is administrator here. 
 		# open connection to projects and populate this for instant searching
 		ajDothis = request.args.get('ajDothis', type=int)
@@ -170,22 +171,29 @@ def edit_sample():
 			cur.execute(c) 
 			srows = cur.fetchall()
 			# now get sample type
-			csampletype= 'SELECT id, tissue FROM sampletype';
+			csampletype= 'SELECT id, tissue, cat FROM sampletype';
 			cur.execute(csampletype)
 			strows = cur.fetchall()
 			# get subtypes
 			csubtype= 'SELECT id, subtype FROM subtype';
 			cur.execute(csubtype)
 			subrows = cur.fetchall()
+			
+			# get units
+			cunit= 'SELECT unit FROM unit';
+			cur.execute(cunit)
+			unitrows = cur.fetchall()
+			
 			# get list of locations
 			# first get mother nodes, usually institutions but you never ever know, hee hee
 			lc = 'SELECT id, name FROM location WHERE parent_id IS NULL;'
 			cur.execute(lc)
 			lcrows = cur.fetchall()
-			
-			location=getChild_location(cur,lcrows,[])
-			
-			return render_template("edit_sample.html",name=escape(session['username']), IDs=srows, sampletype=strows, subtype=subrows, location=location )
+			location = []
+			for l in lcrows:
+				locationt=getChild_location(cur,l[0],l[1],[])
+				location.append(locationt)
+			return render_template("edit_sample.html",name=escape(session['username']), IDs=srows, sampletype=strows, subtype=subrows, location=location, unit=unitrows )
 		
 		
 		
@@ -201,19 +209,30 @@ def edit_sample2():
     # check if user is login.  
     if 'username' in session:
 		cur = conn.cursor()
+		
 		# needs to check if user is administrator here. 
 		# open connection to projects and populate this for instant searching
 		ajDothis = request.args.get('ajDothis', type=int)
 		if (ajDothis ==1):
 			xtable = request.args.get('xtable')
 			id = xtable.split(",")
-			c = 'SELECT * from sample where subject_id = %s';
-			cur.execute(c, (id[0],)) 
-			srows = cur.fetchall()
-			if not srows:
-				srows = 0
-			
-		return jsonify(result=srows)
+			if id:
+				srows=[]
+				try:
+					c = 'SELECT * from sample where subject_id = %s';
+					cur.execute(c, (id[0],)) 
+					srows = cur.fetchall()
+				except:
+					conn.rollback()
+				return jsonify(result=srows)
+		if (ajDothis ==2):
+			subject = request.args.get('subject')
+			id = subject.split(",")
+			subject = id[0]
+			datec = request.args.get('datec')
+
+			test = '%s,%s,%s' % (id,subject,datec)
+			return jsonify(result=['test1','test2'])
 		
 		
 		

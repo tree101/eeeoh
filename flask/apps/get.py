@@ -54,14 +54,15 @@ def checkuser(cur, user):
 		return (rows[0][0])
 		
 
-def getChild_location(cur,parent,location):
-	for id in parent:
-		c = 'SELECT id, name FROM location WHERE parent_id = %s;'
-		cur.execute(c,(id[0],))
-		rows = cur.fetchall()
-		if rows: 
-			for r in rows: 
-				location.append([r[0],id[1],r[1]])
+def getChild_location(cur,pre,name,location):
+	
+	c = 'SELECT id, name FROM location WHERE parent_id = %s;'
+	cur.execute(c,(pre,))
+	rows = cur.fetchall()
+	if rows: 
+		for r in rows: 
+			location.append([r[0],name,r[1]])
+			location = getChild_location(cur,r[0],name+"_"+r[1],location)
 		
 
 	return(location)
