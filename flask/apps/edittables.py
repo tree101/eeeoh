@@ -21,6 +21,7 @@ from psycopg2.extensions import AsIs
 from flask.ext.login import LoginManager
 import json
 import re
+import uuid
 ##################### my own rollups
 from get import *
 
@@ -219,7 +220,7 @@ def edit_sample2():
 			if id:
 				srows=[]
 				try:
-					c = 'SELECT * from sample where subject_id = %s';
+					c = 'SELECT id, sampletype_id, subtype_id, COALESCE(to_char(date_collection, \'MM-DD-YYYY\'), \'\') AS date_collection from sample where subject_id = %s';
 					cur.execute(c, (id[0],)) 
 					srows = cur.fetchall()
 				except:
@@ -228,11 +229,74 @@ def edit_sample2():
 		if (ajDothis ==2):
 			subject = request.args.get('subject')
 			id = subject.split(",")
+			# main fields
 			subject = id[0]
 			datec = request.args.get('datec')
+			sample_id = request.args.getlist('sample_id')
+			# will need to split samples up
+			sample_type = request.args.get('sample_type')
+			sample_subtype = request.args.get('sample_subtype')
+			location = request.args.get('location')
+			location = location.split(",")
+			addloc= request.args.get('addloc')
+			# check if addloc has anything 
+			weight= request.args.get('weight')
+			# new entry also needs to consider remaining set to weight
+			remaining = weight
+            
+			tissue_unit= request.args.get('tissue_unit')
+			accession= request.args.get('accession')
+			percent_tumor= request.args.get('percent_tumor')
+			state= request.args.get('state')
+			stage= request.args.get('stage')
+			label= request.args.get('label')
+			notes= request.args.get('notes')
+			
+			new_sample_id = str(uuid.uuid4());
+			# prepare JSON stuff for samples
+			meta = ('{'
+					'"accession":"%s",'
+					'"percent_tumor":"%s",'
+					'"state":"%s",'
+					'"stage":"%s",'
+					'"i_weight":"%s",'
+					'"i_remaining":"%s",'
+					'"unit":"%s",'
+					'"label":"%s"'
 
-			test = '%s,%s,%s' % (id,subject,datec)
-			return jsonify(result=['test1','test2'])
+			'}') % (accession,percent_tumor,state,stage,weight,remaining,tissue_unit,label)
+			
+			# need to get file upload right here
+			# ok lets try some insertion here
+			insertc = (' INSERT INTO sample '
+					   '(id, subject_id, sampletype_id, subtype_id,timestamp,'
+					   ' date_collection, users,'
+					   'location_id,label,parent,notes,meta) '
+					   ' VALUES (%s,%s,%s,%s,DEFAULT,%s,%s,%s,%s,%s,%s,%s);'
+					   )
+			# also needs one for the join table
+			# ignore for now ok?
+			# lets do some insertion here
+
+			# we need to consider adding to the joint table now
+			jointc = ''
+			child = new_sample_id;
+			parent = new_sample_id;
+
+			if int(sample_id[0]) == -1:
+				# then child and parent are the same
+				child = new_sample_id;
+				parent = new_sample_id;
+
+			
+			try:
+				cur.execute(insertc, (new_sample_id,subject,sample_type,sample_subtype,datec,session['username'],location[0],label,parent,notes,meta)) 
+				conn.commit()
+				jointc = 'good'
+			except:
+				conn.rollback()
+				jointc = 'no good'
+			return jsonify(result=[new_sample_id,sample_type,sample_subtype,sample_id[0],jointc])
 		
 		
 		

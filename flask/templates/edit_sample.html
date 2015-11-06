@@ -59,12 +59,22 @@
 		  
 			 <select class="form-control" id="sample_id" name = "sample_id" >
 			 <div id="hide1_o" name ="hide1_o">     
-					<option value="none"></option>
+					<option value="-1"></option>
 				</div>
 			 </select>
 
 		 </div>
 
+		
+</div>
+
+
+<div class="row" id="hide12" name="hide12">
+
+	<div class="col-lg-4" >  </div>
+
+		<div class="col-lg-7"> Sorry there are no samples associated with this subject as of yet. </div>
+		<div class="col-lg-1" >  </div>
 		
 </div>
 
@@ -89,7 +99,7 @@
 		</div>
 
 		<div class="col-lg-3" >  
-			 <select class="form-control" id="sample" name = "sample" >
+			 <select class="form-control" id="sample_type" name = "sample_type" >
 				 <option value="-1" selected></option>
 				{% for tags in sampletype %}
 			   <option value="{{tags[0]}}"> {{tags[2]}}: {{tags[1]}} </option>
@@ -100,11 +110,11 @@
 		</div>
 
 		<div class="col-lg-2" >
-		<label for="sampletype"> Sample subtype </label>
+		<label for="sample_subtype"> Sample subtype </label>
 		</div>
 
 		<div class="col-lg-3" >  
-			 <select class="form-control" id="sampletype" name = "sampletype" >
+			 <select class="form-control" id="sample_subtype" name = "sample_subtype" >
 			  <option value="-1" selected></option>
 			  {% for tags in subtype %}
 			   <option value="{{tags[0]}}"> {{tags[1]}} </option>
@@ -147,21 +157,31 @@
 <div class="row">
 		<div class="col-lg-1" >  </div>
 		
-		<div class="col-lg-1" ><label for="sample">Location Search</label></div>
-		<div class="col-lg-8" >
+		<div class="col-lg-2" ><label for="sample">Location Search</label></div>
+		<div class="col-lg-6" >
 		<input type="text" class="form-control" id="whatlocation" name = "whatlocation" placeholder="where did you store this?">
 		</div>
 
 		<div class="col-lg-1" ><label for="sample">ADD</label></div>
-		<div class="col-lg-1" >
-		<input type="text" class="form-control" id="addloc" name = "addloc">
-		</div>
+		<div class="col-lg-1" ><input type="text" class="form-control" id="addloc" name = "addloc"></div>
+		<div class="col-lg-1" >  </div>
 
 
 <!-- end row 3 locations -->
 </div>
 
-
+<br>
+<!-- add notes here -->
+<div class="row">
+				<div class="col-lg-1" >  </div>
+				<div class="col-lg-2" > <label for="notes"> Notes:</label> </div>
+				<div class="col-lg-8">
+				  <textarea class="form-control" rows="5" id="notes"  name="notes" placeholder="additional notes?" ></textarea>
+				  </div>
+				<div class="col-lg-1" >  </div>
+				
+</div>
+<!-- end notes --> 
 <!-- end hide 2 details -->
 </div>
 
@@ -211,7 +231,7 @@
 	</div>
 
 	<label for="stage" class="col-lg-1">Stage</label>
-	<div class="col-lg-2">
+	<div class="col-lg-3">
 			<select class="form-control" id="stage" name="stage">
 				<option value="biopsy">biopsy</option>
 				<option value="metastasize">metastasize</option>
@@ -220,17 +240,33 @@
 				<option value="recurrent/residual">recurrent/residual</option>
 			 </select>
 	</div>
+    <label for="label" class="col-lg-1">Label</label>
+	<div class="col-lg-3"> <input type="text" id="label" name="label" class="form-control"></div>
 
-	<label for="upload" class="col-lg-1">Upload</label>
-	<div class="col-lg-2"> <input type="file" id="file" name="file" class="file"></div>
 	
-<div class="col-lg-2"></div>
+
+</div>
+
+<div class="form-group">
+	<div class="col-lg-1" >  </div>
+	
+<div>
+<label for="upload" class="col-lg-1">Upload</label>
+	<div class="col-lg-2"> <input type="file" id="file" name="file" class="file"></div>
+
+<div class="col-lg-9" id="pic" name="pic">
+
+</div>
+	
 </div>
 
 
 </div>
 <!-- end tissue -->
 <!-- insert button -->
+
+<br>
+
 
 <br><br>
 <hr style="border-color:#820000">
@@ -247,7 +283,11 @@
 
 
  </form>
+
+ <div id="temp" name="temp"></div>
  <script>
+  
+
 
 // autofill
 
@@ -292,6 +332,7 @@ $(function() {
  // see what they want first, new or exisiting
 $('#datec').datepicker();
 $('#hide1').hide();
+$('#hide12').hide();
 $("#tissue").hide();
 
  $('#what1').bind('blur', function() {
@@ -307,19 +348,20 @@ $("#tissue").hide();
 					
 				if (data.result == 0){
 					//id="hide1_no"
-					txt= "there are no samples associated with this subject " + data.result;
-					$("#hide1_no").html(txt);
-					$('#hide1').show();
+					
+					$('#hide1').hide();
+					$('#hide12').fadeIn("slow");
 				}
 				else{
 				for (var x in data.result) {
 				txt += "<option value =" + data.result[x][0] +">" + data.result[x][0] + ",age " + data.result[x][1] + ",sex " + data.result[x][2] + ",date " + data.result[x][3]+ "</option>"	
-				
+				$("#sample_id").html(txt);
+				$('#hide1').show();
+				$('#hide12').hide();
 				}
 				courseStr = console.table(data.result);
 			
-				//$("#id").html(txt);
-				$('#hide1').show();
+				
 			}
         });
         return false;
@@ -328,18 +370,18 @@ $("#tissue").hide();
 
 
 
- $('#sample').bind('change', function() {
+ $('#sample_type').bind('change', function() {
 		
 		// var s = $( "#sample" ).val()
 		// get text instead of value 
-		var s = document.getElementById("sample").options[document.getElementById("sample").selectedIndex ].text
+		var s = document.getElementById("sample_type").options[document.getElementById("sample_type").selectedIndex ].text
 		
 		if(/Tissue/.test(s)){
-			$("#tissue").show();
+			$("#tissue").slideDown("slow","linear");
 			document.getElementById('meta').value = 1; 
 		}
 		else{
-			$("#tissue").hide();
+			$("#tissue").slideUp("slow","linear");
 			document.getElementById('meta').value = 0; 
 		} 
         return false;
@@ -355,17 +397,22 @@ $("#tissue").hide();
 					var thistable = 
 					$.getJSON('/edit_sample2', {
 					  subject: $( "#what1" ).val(),
-					  sample:  $( "#sample" ).val() ,
+					  sample_id:  $( "#sample_id" ).val() ,
 					  datec:  $( "#datec" ).val(),
+
 					  sample_type:  $( "#sample_type" ).val(),
+					  sample_subtype: $( "#sample_subtype").val(),
+					  
 					  location:  $( "#whatlocation" ).val(),
-					  location:  $( "#addloc" ).val(),
+					  addloc:  $( "#addloc" ).val(),
 					  weight:  $( "#weight" ).val(),
 					  tissue_unit:  $( "#tissue_unit" ).val(),
 					  accession:  $( "#accession" ).val(),
 					  percent_tumor:  $( "#percent_tumor" ).val(),
 					  state:          $( "#state" ).val(),
 					  stage:          $( "#stage" ).val(),
+					  notes:          $( "#notes" ).val(),
+					  label:          $( "#label" ).val(),
 					  ajDothis: 2
 					},
 
@@ -377,8 +424,8 @@ $("#tissue").hide();
 							
 							courseStr = console.table(data.result);
 						
-							$("#hide1_no").html(data.result);
-							$('#hide1').show();
+							$("#temp").html($( "#sample_subtype" ).val());
+							
 				});	
 
         }

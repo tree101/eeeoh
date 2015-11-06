@@ -173,7 +173,7 @@ CREATE TABLE sample(
 	location_id INT REFERENCES  location(id), 
 
 	label VARCHAR, -- this is still to be decided contingent on what labeling machine we need
-
+	
 	parent uuid REFERENCES sample(id),
 	
     notes TEXT,
@@ -181,11 +181,11 @@ CREATE TABLE sample(
 
 	);
 
-DROP TABLE  IF EXISTS  parentID CASCADE;
+DROP TABLE  IF EXISTS  sample_parent_child CASCADE;
 
 CREATE TABLE sample_parent_child(	
-	child  uuid NOT NULL REFERENCES sample(id),
-	parent uuid NOT NULL REFERENCES sample(parent) ,
+	child  uuid NOT NULL,
+	parent uuid NOT NULL,
 	PRIMARY KEY (child, parent)
 	);
 		
