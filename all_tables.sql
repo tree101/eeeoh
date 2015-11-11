@@ -163,19 +163,19 @@ DROP TABLE  IF EXISTS  sample CASCADE;
 CREATE TABLE sample(
 
     id uuid NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(), 
-    subject_id uuid NOT NULL REFERENCES  subject(id),  
+    subject_id uuid  REFERENCES  subject(id),  
 	sampletype_id INT NOT NULL REFERENCES  sampletype(id), -- FK from type
-	subtype_id INT REFERENCES  sampletype(id), -- FK from type
+	subtype_id INT REFERENCES  subtype(id), -- FK from type
 	timestamp TIMESTAMP(2) DEFAULT (now() at time zone 'PST'), -- ,	
 	date_collection date, 
 	
     users VARCHAR NOT NULL, -- from cookie 
 	location_id INT REFERENCES  location(id), 
-
+	weight FLOAT, 
 	label VARCHAR, -- this is still to be decided contingent on what labeling machine we need
 	
 	parent uuid REFERENCES sample(id),
-	
+	file VARCHAR, 
     notes TEXT,
     meta JSON 
 

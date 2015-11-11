@@ -66,4 +66,28 @@ def getChild_location(cur,pre,name,location):
 		
 
 	return(location)
+
+
+def getParents(cur,ch):
+	info=[]
+	c=(
+				'SELECT sample.id, sampletype.tissue, subtype.subtype, sample_parent_child.parent, sample_parent_child.child '
+				'FROM sample '
+				'INNER JOIN sampletype ON sample.sampletype_id = sampletype.id '
+				'INNER JOIN subtype ON sample.subtype_id = subtype.id '
+				'INNER JOIN sample_parent_child ON sample.id = sample_parent_child.parent '
+				'AND sample_parent_child.child = %s '
+			)
+
+	cur.execute(c,(ch,))
+	rows = cur.fetchall()
+	 
+	for r in rows:
+		info.append(  [ r[4], r[3]  ]  )
+		#if(r[4]!=r[3]):
+		#	info = getParents(cur,r[3],info)
+	
+
+                                
+	return(info)
 		
